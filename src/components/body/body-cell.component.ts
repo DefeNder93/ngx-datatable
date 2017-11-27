@@ -14,6 +14,7 @@ import { MouseEvent, KeyboardEvent } from '../../events';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="datatable-body-cell-label">
+      <button (click)="toggleColumnExpand.emit(!columnExpanded)" *ngIf="columnIndex === 0">{{columnExpanded ? '-' : '+'}}</button>
       <label
         *ngIf="column.checkboxable && (!displayCheck || displayCheck(row, column, value))"
         class="datatable-checkbox">
@@ -38,6 +39,11 @@ import { MouseEvent, KeyboardEvent } from '../../events';
 })
 export class DataTableBodyCellComponent implements DoCheck, OnDestroy {
   @Input() displayCheck: any;
+  @Input() columnIndex: number;
+  @Input() columnExpanded: boolean;
+
+  @Output()
+  toggleColumnExpand: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   @Input() set group(group: any) {
     this._group = group;

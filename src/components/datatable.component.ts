@@ -18,6 +18,8 @@ import { DataTableColumnDirective } from './columns';
 import { DatatableRowDetailDirective } from './row-detail';
 import { DatatableFooterDirective } from './footer';
 import { MouseEvent } from '../events';
+import {Subject} from "rxjs/Subject";
+const $ = require("jquery");
 
 @Component({
   selector: 'ngx-datatable',
@@ -27,6 +29,7 @@ import { MouseEvent } from '../events';
       (visible)="recalculate()">
       <datatable-header
         *ngIf="headerHeight"
+        [columnsResize]="columnsResize"
         [sorts]="sorts"
         [sortType]="sortType"
         [scrollbarH]="scrollbarH"
@@ -48,6 +51,7 @@ import { MouseEvent } from '../events';
       </datatable-header>
       <datatable-body
         [groupRowsBy]="groupRowsBy"
+        [columnsResize]="columnsResize"
         [groupedRows]="groupedRows"
         [rows]="_internalRows"
         [groupExpansionDefault]="groupExpansionDefault"
@@ -105,6 +109,28 @@ import { MouseEvent } from '../events';
   }
 })
 export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
+
+  columnsResize: Subject<any> = new Subject();
+
+  globalResizeTimer = null;
+
+  setResponsivenessToColumns = () => {
+    const lastColumn = this._internalColumns[this._internalColumns.length - 1];
+    const jLastColumn = $('.datatable-header-cell[title="' + lastColumn.name + '"]');
+    const jDatatableHeader = $('.datatable-header');
+    if (!jLastColumn.offset()) {
+      // header is hidden
+      this.columnsResize.next(true);
+      return;
+    }
+    let lastColumnRightEdge = jLastColumn.offset().left + jLastColumn.outerWidth();
+    let headerRightEdge = jDatatableHeader.offset().left + jDatatableHeader.outerWidth();
+    const lastCellInViewport = headerRightEdge >= lastColumnRightEdge;
+    this.columnsResize.next(lastCellInViewport);
+    // this.cd.markForCheck();
+    // this.recalcLayout();
+  }
+
 
   /**
    * Rows that are displayed in the table.
@@ -734,6 +760,13 @@ export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
   @HostListener('window:resize')
   @throttleable(5)
   onWindowResize(): void {
+
+    this.globalResizeTimer != null && window.clearTimeout(this.globalResizeTimer);
+    this.globalResizeTimer = window.setTimeout(() => {
+      console.log('setResponsivenessToColumns');
+      this.setResponsivenessToColumns();
+    }, 200);
+
     this.recalculate();
   }
 

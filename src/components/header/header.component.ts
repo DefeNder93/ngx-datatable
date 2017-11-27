@@ -1,10 +1,11 @@
 import {
-  Component, Output, EventEmitter, Input, HostBinding
+  Component, Output, EventEmitter, Input, HostBinding, OnInit, ChangeDetectorRef
 } from '@angular/core';
 import { SortType, SelectionType } from '../../types';
 import { columnsByPin, columnGroupWidths, columnsByPinArr, translateXY } from '../../utils';
 import { DataTableColumnDirective } from '../columns';
 import { MouseEvent } from '../../events';
+import {Subject} from "rxjs/Subject";
 
 @Component({
   selector: 'datatable-header',
@@ -20,7 +21,7 @@ import { MouseEvent } from '../../events';
         [class]="'datatable-row-' + colGroup.type"
         [ngStyle]="stylesByGroup(colGroup.type)">
         <datatable-header-cell
-          *ngFor="let column of colGroup.columns; trackBy: columnTrackingFn"
+          *ngFor="let column of colGroup.columns | appVisible; trackBy: columnTrackingFn"
           resizeable
           [resizeEnabled]="column.resizeable"
           (resize)="onColumnResized($event, column)"
@@ -53,11 +54,26 @@ import { MouseEvent } from '../../events';
     class: 'datatable-header'
   }
 })
-export class DataTableHeaderComponent {
+export class DataTableHeaderComponent implements OnInit{
+
+  ngOnInit(): void {
+    this.columnsByPin[1].columns.forEach(c => c._inViewbox = true);
+    this.columnsResize.subscribe(e => {
+      const lastColumn = this.columnsByPin[1].columns[this.columnsByPin[1].columns.length - 1];
+      lastColumn._inViewbox = e;
+      this.cd.markForCheck();
+    });
+  }
+
+  constructor(private cd: ChangeDetectorRef) {}
+
   @Input() sortAscendingIcon: any;
   @Input() sortDescendingIcon: any;
   @Input() scrollbarH: boolean;
   @Input() dealsWithGroup: boolean;
+
+  @Input()
+  columnsResize: Subject<any>;
 
   _innerWidth: number;
 
