@@ -26,6 +26,7 @@ import {Subject} from "rxjs/Subject";
           tabindex="-1"
           [row]="row"
           [group]="group"
+          [responsive]="responsive"
           [expanded]="expanded"
           [columnExpanded]="columnExpanded"
           [isSelected]="isSelected"
@@ -59,12 +60,16 @@ import {Subject} from "rxjs/Subject";
   `
 })
 export class DataTableBodyRowComponent implements DoCheck, OnInit {
+
+  responsive: boolean = false;
+
   ngOnInit(){
     this.columnsByPin[1].columns.forEach(c => c._inViewbox = true);
     this.columnsResize.subscribe(e => {
       // const lastColumn = this.columnsByPin[1].columns[this.columnsByPin[1].columns.length - 1];
       // lastColumn._inViewbox = e;
       e.forEach((collapsed, i) => this.columnsByPin[1].columns[i]._inViewbox = collapsed);
+      this.responsive = e.indexOf(false) !== -1;
       this.cd.markForCheck();
     });
   }

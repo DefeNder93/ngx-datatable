@@ -766,7 +766,6 @@ export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
 
     this.globalResizeTimer != null && window.clearTimeout(this.globalResizeTimer);
     this.globalResizeTimer = window.setTimeout(() => {
-      console.log('setResponsivenessToColumns');
       this.setResponsivenessToColumns();
     }, 200);
 
