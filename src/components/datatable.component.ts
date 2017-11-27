@@ -114,21 +114,28 @@ export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
 
   globalResizeTimer = null;
 
+  @Input() alwaysShownColumns: number[];
+
   setResponsivenessToColumns = () => {
     const lastColumn = this._internalColumns[this._internalColumns.length - 1];
     const jLastColumn = $('.datatable-header-cell[title="' + lastColumn.name + '"]');
     const jDatatableHeader = $('.datatable-header');
     if (!jLastColumn.offset()) {
       // header is hidden
-      this.columnsResize.next([true, true, false]);
+      this.columnsResize.next(this.getColumnsResizeMap());
       return;
     }
     let lastColumnRightEdge = jLastColumn.offset().left + jLastColumn.outerWidth();
     let headerRightEdge = jDatatableHeader.offset().left + jDatatableHeader.outerWidth();
     const lastCellInViewport = headerRightEdge >= lastColumnRightEdge;
-    this.columnsResize.next([true, true, false]);
+    this.columnsResize.next(this.getColumnsResizeMap());
     // this.cd.markForCheck();
     // this.recalcLayout();
+  }
+
+  getColumnsResizeMap = () => {
+    console.log('this.alwaysShownColumns', this.alwaysShownColumns);
+    return [true, true, false];
   }
 
 
@@ -666,7 +673,7 @@ export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
     // listener will invoke this itself upon show
     this.recalculate();
     setTimeout(() => {
-      this.columnsResize.next([true, true, false]);
+      this.columnsResize.next(this.getColumnsResizeMap());
     });
   }
 
