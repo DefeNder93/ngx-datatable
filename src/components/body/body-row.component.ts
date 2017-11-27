@@ -42,7 +42,7 @@ import {Subject} from "rxjs/Subject";
       <div *ngIf="columnExpanded" class="datatable-responsive-row" style="display: flex; flex-direction: column;">
         <!--[columnIndex]="ii"-->
         <datatable-body-cell
-          *ngFor="let column of colGroup.columns; let ii = index; trackBy: columnTrackingFn"
+          *ngFor="let column of colGroup.columns | appVisible:true; let ii = index; trackBy: columnTrackingFn"
           tabindex="-1"
           [row]="row"
           [group]="group"
@@ -62,8 +62,9 @@ export class DataTableBodyRowComponent implements DoCheck, OnInit {
   ngOnInit(){
     this.columnsByPin[1].columns.forEach(c => c._inViewbox = true);
     this.columnsResize.subscribe(e => {
-      const lastColumn = this.columnsByPin[1].columns[this.columnsByPin[1].columns.length - 1];
-      lastColumn._inViewbox = e;
+      // const lastColumn = this.columnsByPin[1].columns[this.columnsByPin[1].columns.length - 1];
+      // lastColumn._inViewbox = e;
+      e.forEach((collapsed, i) => this.columnsByPin[1].columns[i]._inViewbox = collapsed);
       this.cd.markForCheck();
     });
   }

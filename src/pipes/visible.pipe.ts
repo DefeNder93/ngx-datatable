@@ -5,10 +5,10 @@ import { Pipe, PipeTransform } from '@angular/core';
   pure: false
 })
 export class AppVisiblePipe implements PipeTransform {
-  transform(items: any[], filter: Object): any {
+  transform(items: any[], reverse: boolean): any {
     if (!items) {
       return items;
     }
-    return items.filter(item => item._inViewbox !== false);
+    return reverse ? items.filter(item => item._inViewbox === false) : items.filter(item => item._inViewbox !== false);
   }
 }

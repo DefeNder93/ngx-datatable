@@ -120,13 +120,13 @@ export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
     const jDatatableHeader = $('.datatable-header');
     if (!jLastColumn.offset()) {
       // header is hidden
-      this.columnsResize.next(true);
+      this.columnsResize.next([true, true, false]);
       return;
     }
     let lastColumnRightEdge = jLastColumn.offset().left + jLastColumn.outerWidth();
     let headerRightEdge = jDatatableHeader.offset().left + jDatatableHeader.outerWidth();
     const lastCellInViewport = headerRightEdge >= lastColumnRightEdge;
-    this.columnsResize.next(lastCellInViewport);
+    this.columnsResize.next([true, true, false]);
     // this.cd.markForCheck();
     // this.recalcLayout();
   }
@@ -664,7 +664,10 @@ export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
     // need to call this immediatly to size
     // if the table is hidden the visibility
     // listener will invoke this itself upon show
-    this.recalculate();    
+    this.recalculate();
+    setTimeout(() => {
+      this.columnsResize.next([true, true, false]);
+    });
   }
 
   /**
