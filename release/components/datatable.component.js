@@ -45,10 +45,8 @@ var DatatableComponent = /** @class */ (function () {
         };
         this.setStickyHeader = function () {
             var jEl = $(_this.element);
-            // const jDatatableHeader = jEl.find('.datatable-header');
-            // jDatatableHeader.offset().top
-            console.log('jEl.offset().top', jEl.offset().top, 'window.pageYOffset', window.pageYOffset);
             _this.stickyHeader = jEl.offset().top < window.pageYOffset && jEl.offset().top + jEl.outerHeight() > window.pageYOffset;
+            _this.cd.markForCheck();
         };
         this.getColumnsResizeMap = function () {
             if (!_this.responsive) {
