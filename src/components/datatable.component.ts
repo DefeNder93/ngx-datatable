@@ -6,6 +6,8 @@ import {
   ChangeDetectionStrategy, ChangeDetectorRef
 } from '@angular/core';
 
+import 'rxjs/add/operator/debounceTime';
+
 import {
   forceFillColumnWidths, adjustColumnWidths, sortRows,
   setColumnDefaults, throttleable, translateTemplates
@@ -21,7 +23,8 @@ import { DataTableHeaderComponent } from './header';
 import { MouseEvent } from '../events';
 import {Subject} from "rxjs/Subject";
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-const $ = require("jquery");
+// const $ = require("jquery");
+import * as $ from 'jquery';
 
 @Component({
   selector: 'ngx-datatable',
@@ -114,8 +117,8 @@ const $ = require("jquery");
 export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
 
   columnsResize: Subject<any> = new Subject();
-  windowResize$: Subject<any> = new Subject();
-  windowScroll$: Subject<any> = new Subject();
+  windowResize$: any = new Subject();
+  windowScroll$: any = new Subject();
   stickyHeader: boolean;
 
   @Input() alwaysShownColumns: number[];
