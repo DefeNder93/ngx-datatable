@@ -4,6 +4,10 @@ import { TableColumn } from '../../types/table-column.type';
 export declare class DataTableBodyCellComponent implements DoCheck, OnDestroy {
     private cd;
     displayCheck: any;
+    columnIndex: number;
+    columnExpanded: boolean;
+    responsive: boolean;
+    toggleColumnExpand: EventEmitter<boolean>;
     group: any;
     rowHeight: number;
     isSelected: boolean;

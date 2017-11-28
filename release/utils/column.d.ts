@@ -23,11 +23,5 @@ export declare function columnTotalWidth(columns: any[], prop?: string): number;
  * Calculates the total width of all columns and their groups
  */
 export declare function columnsTotalWidth(columns: any, prop?: any): number;
-export declare function columnsByPinArr(val: any): {
-    type: string;
-    columns: any;
-}[];
-export declare function allColumnsByPinArr(val: any): {
-    type: string;
-    columns: any;
-}[];
+export declare function columnsByPinArr(val: any): any[];
+export declare function allColumnsByPinArr(val: any): any[];

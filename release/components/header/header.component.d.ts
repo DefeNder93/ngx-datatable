@@ -1,12 +1,18 @@
-import { EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { EventEmitter, OnInit, ChangeDetectorRef } from '@angular/core';
 import { SortType, SelectionType } from '../../types';
 import { DataTableColumnDirective } from '../columns';
-export declare class DataTableHeaderComponent {
+import { Subject } from "rxjs/Subject";
+export declare class DataTableHeaderComponent implements OnInit {
     private cd;
+    ngOnInit(): void;
+    constructor(cd: ChangeDetectorRef);
     sortAscendingIcon: any;
     sortDescendingIcon: any;
     scrollbarH: boolean;
     dealsWithGroup: boolean;
+    stickyHeader: boolean;
+    columnsResize: Subject<any>;
+    _innerWidth: number;
     innerWidth: number;
     sorts: any[];
     sortType: SortType;
@@ -27,7 +33,6 @@ export declare class DataTableHeaderComponent {
     }>;
     _columnsByPin: any;
     _columnGroupWidths: any;
-    _innerWidth: number;
     _offsetX: number;
     _columns: any[];
     _headerHeight: string;
@@ -36,7 +41,6 @@ export declare class DataTableHeaderComponent {
         center: {};
         right: {};
     };
-    constructor(cd: ChangeDetectorRef);
     onLongPressStart({event, model}: {
         event: any;
         model: any;

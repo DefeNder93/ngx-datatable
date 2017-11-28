@@ -13,11 +13,16 @@ var core_1 = require("@angular/core");
 var utils_1 = require("../../utils");
 var services_1 = require("../../services");
 var events_1 = require("../../events");
+var Subject_1 = require("rxjs/Subject");
 var DataTableBodyRowComponent = /** @class */ (function () {
     function DataTableBodyRowComponent(differs, scrollbarHelper, cd, element) {
+        var _this = this;
         this.differs = differs;
         this.scrollbarHelper = scrollbarHelper;
         this.cd = cd;
+        this.responsive = false;
+        this.columnExpanded = false;
+        this.toggleColumnExpand = function (e) { return _this.columnExpanded = !_this.columnExpanded; };
         this.activate = new core_1.EventEmitter();
         this._groupStyles = {
             left: {},
@@ -27,6 +32,15 @@ var DataTableBodyRowComponent = /** @class */ (function () {
         this._element = element.nativeElement;
         this._rowDiffer = differs.find({}).create();
     }
+    DataTableBodyRowComponent.prototype.ngOnInit = function () {
+        var _this = this;
+        this._columnsByPin[1].columns.forEach(function (c) { return c._inViewbox = true; });
+        this.columnsResize.subscribe(function (e) {
+            e.forEach(function (collapsed, i) { return _this._columnsByPin[1].columns[i]._inViewbox = collapsed; });
+            _this.responsive = e.indexOf(false) !== -1;
+            _this.cd.markForCheck();
+        });
+    };
     Object.defineProperty(DataTableBodyRowComponent.prototype, "columns", {
         get: function () {
             return this._columns;
@@ -174,6 +188,10 @@ var DataTableBodyRowComponent = /** @class */ (function () {
     };
     __decorate([
         core_1.Input(),
+        __metadata("design:type", Subject_1.Subject)
+    ], DataTableBodyRowComponent.prototype, "columnsResize", void 0);
+    __decorate([
+        core_1.Input(),
         __metadata("design:type", Array),
         __metadata("design:paramtypes", [Array])
     ], DataTableBodyRowComponent.prototype, "columns", null);
@@ -250,7 +268,8 @@ var DataTableBodyRowComponent = /** @class */ (function () {
         core_1.Component({
             selector: 'datatable-body-row',
             changeDetection: core_1.ChangeDetectionStrategy.OnPush,
-            template: "\n    <div\n      *ngFor=\"let colGroup of _columnsByPin; let i = index; trackBy: trackByGroups\"\n      class=\"datatable-row-{{colGroup.type}} datatable-row-group\"\n      [ngStyle]=\"_groupStyles[colGroup.type]\">\n      <datatable-body-cell\n        *ngFor=\"let column of colGroup.columns; let ii = index; trackBy: columnTrackingFn\"\n        tabindex=\"-1\"\n        [row]=\"row\"\n        [group]=\"group\"\n        [expanded]=\"expanded\"\n        [isSelected]=\"isSelected\"\n        [rowIndex]=\"rowIndex\"\n        [column]=\"column\"\n        [rowHeight]=\"rowHeight\"\n        [displayCheck]=\"displayCheck\"\n        (activate)=\"onActivate($event, ii)\">\n      </datatable-body-cell>\n    </div>      \n  "
+            template: "\n    <div\n      *ngFor=\"let colGroup of _columnsByPin; let i = index; trackBy: trackByGroups\"\n      class=\"datatable-row-{{colGroup.type}} datatable-row-group\"\n      style=\"flex-direction: column\"\n      [ngStyle]=\"_groupStyles[colGroup.type]\">\n\n      <div class=\"datatable-main-row\">\n        <datatable-body-cell\n          *ngFor=\"let column of colGroup.columns | appVisible; let ii = index; trackBy: columnTrackingFn\"\n          tabindex=\"-1\"\n          [row]=\"row\"\n          [group]=\"group\"\n          [responsive]=\"responsive\"\n          [expanded]=\"expanded\"\n          [columnExpanded]=\"columnExpanded\"\n          [isSelected]=\"isSelected\"\n          [columnIndex]=\"ii\"\n          [rowIndex]=\"rowIndex\"\n          [column]=\"column\"\n          [rowHeight]=\"rowHeight\"\n          [displayCheck]=\"displayCheck\"\n          (toggleColumnExpand)=\"toggleColumnExpand($event)\"\n          (activate)=\"onActivate($event, ii)\">\n        </datatable-body-cell>\n      </div>\n\n      <div *ngIf=\"columnExpanded\" class=\"datatable-responsive-row\">\n        <datatable-body-cell\n          *ngFor=\"let column of colGroup.columns | appVisible:true; let ii = index; trackBy: columnTrackingFn\"\n          tabindex=\"-1\"\n          [row]=\"row\"\n          [group]=\"group\"\n          [expanded]=\"expanded\"\n          [isSelected]=\"isSelected\"\n          [rowIndex]=\"rowIndex\"\n          [column]=\"column\"\n          [rowHeight]=\"rowHeight\"\n          [displayCheck]=\"displayCheck\"\n          (activate)=\"onActivate($event, ii)\">\n        </datatable-body-cell>\n      </div>\n    </div>      \n  ",
+            styles: ["\n    .datatable-responsive-row {\n      display: flex; \n      flex-direction: column;\n    }\n    .datatable-main-row {\n      display: flex;\n    }\n  "]
         }),
         __metadata("design:paramtypes", [core_1.KeyValueDiffers,
             services_1.ScrollbarHelper,

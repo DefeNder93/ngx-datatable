@@ -2,6 +2,7 @@ import { EventEmitter, ChangeDetectorRef, OnInit, OnDestroy } from '@angular/cor
 import { RowHeightCache } from '../../utils';
 import { SelectionType } from '../../types';
 import { ScrollerComponent } from './scroller.component';
+import { Subject } from 'rxjs/Subject';
 export declare class DataTableBodyComponent implements OnInit, OnDestroy {
     private cd;
     scrollbarV: boolean;
@@ -24,6 +25,7 @@ export declare class DataTableBodyComponent implements OnInit, OnDestroy {
     groupExpansionDefault: boolean;
     innerWidth: number;
     groupRowsBy: string;
+    columnsResize: Subject<any>;
     pageSize: number;
     rows: any[];
     columns: any[];

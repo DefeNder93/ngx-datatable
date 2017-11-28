@@ -12,6 +12,7 @@ require("rxjs/add/observable/fromEvent");
 var components_1 = require("./components");
 var directives_1 = require("./directives");
 var services_1 = require("./services");
+var visible_pipe_1 = require("./pipes/visible.pipe");
 var NgxDatatableModule = /** @class */ (function () {
     function NgxDatatableModule() {
     }
@@ -49,7 +50,8 @@ var NgxDatatableModule = /** @class */ (function () {
                 components_1.DataTableColumnHeaderDirective,
                 components_1.DataTableColumnCellDirective,
                 components_1.DatatableFooterDirective,
-                components_1.DatatableGroupHeaderTemplateDirective
+                components_1.DatatableGroupHeaderTemplateDirective,
+                visible_pipe_1.AppVisiblePipe
             ],
             exports: [
                 components_1.DatatableComponent,

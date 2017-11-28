@@ -1,9 +1,13 @@
-import { ElementRef, KeyValueDiffers, EventEmitter, ChangeDetectorRef, DoCheck } from '@angular/core';
+import { ElementRef, KeyValueDiffers, EventEmitter, ChangeDetectorRef, DoCheck, OnInit } from '@angular/core';
 import { ScrollbarHelper } from '../../services';
-export declare class DataTableBodyRowComponent implements DoCheck {
+import { Subject } from 'rxjs/Subject';
+export declare class DataTableBodyRowComponent implements DoCheck, OnInit {
     private differs;
     private scrollbarHelper;
     private cd;
+    responsive: boolean;
+    ngOnInit(): void;
+    columnsResize: Subject<any>;
     columns: any[];
     innerWidth: number;
     expanded: boolean;
@@ -14,6 +18,8 @@ export declare class DataTableBodyRowComponent implements DoCheck {
     rowIndex: number;
     displayCheck: any;
     offsetX: number;
+    columnExpanded: boolean;
+    toggleColumnExpand: (e: any) => boolean;
     readonly cssClass: string;
     rowHeight: number;
     readonly columnsTotalWidths: string;

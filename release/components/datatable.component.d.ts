@@ -1,4 +1,5 @@
 import { ElementRef, EventEmitter, OnInit, QueryList, AfterViewInit, DoCheck, KeyValueDiffers, KeyValueDiffer, ChangeDetectorRef } from '@angular/core';
+import 'rxjs/add/operator/debounceTime';
 import { ScrollbarHelper } from '../services';
 import { ColumnMode, SortType, SelectionType, TableColumn, ContextmenuType } from '../types';
 import { DataTableBodyComponent } from './body';
@@ -7,10 +8,20 @@ import { DataTableColumnDirective } from './columns';
 import { DatatableRowDetailDirective } from './row-detail';
 import { DatatableFooterDirective } from './footer';
 import { DataTableHeaderComponent } from './header';
+import { Subject } from "rxjs/Subject";
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 export declare class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
     private scrollbarHelper;
     private cd;
+    columnsResize: Subject<any>;
+    windowResize$: any;
+    windowScroll$: any;
+    stickyHeader: boolean;
+    alwaysShownColumns: number[];
+    responsive: boolean;
+    setResponsivenessToColumns: () => void;
+    setStickyHeader: () => void;
+    getColumnsResizeMap: () => any[];
     /**
      * Gets the rows.
      */
@@ -388,6 +399,7 @@ export declare class DatatableComponent implements OnInit, DoCheck, AfterViewIni
      * Window resize handler to update sizes.
      */
     onWindowResize(): void;
+    onWindowScroll(): void;
     /**
      * Recalulcates the column widths based on column width
      * distribution mode and scrollbar offsets.

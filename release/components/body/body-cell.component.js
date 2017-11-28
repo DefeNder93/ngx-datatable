@@ -16,6 +16,7 @@ var events_1 = require("../../events");
 var DataTableBodyCellComponent = /** @class */ (function () {
     function DataTableBodyCellComponent(element, cd) {
         this.cd = cd;
+        this.toggleColumnExpand = new core_1.EventEmitter();
         this.activate = new core_1.EventEmitter();
         this.isFocused = false;
         this.onCheckboxChangeFn = this.onCheckboxChange.bind(this);
@@ -307,6 +308,22 @@ var DataTableBodyCellComponent = /** @class */ (function () {
     ], DataTableBodyCellComponent.prototype, "displayCheck", void 0);
     __decorate([
         core_1.Input(),
+        __metadata("design:type", Number)
+    ], DataTableBodyCellComponent.prototype, "columnIndex", void 0);
+    __decorate([
+        core_1.Input(),
+        __metadata("design:type", Boolean)
+    ], DataTableBodyCellComponent.prototype, "columnExpanded", void 0);
+    __decorate([
+        core_1.Input(),
+        __metadata("design:type", Boolean)
+    ], DataTableBodyCellComponent.prototype, "responsive", void 0);
+    __decorate([
+        core_1.Output(),
+        __metadata("design:type", core_1.EventEmitter)
+    ], DataTableBodyCellComponent.prototype, "toggleColumnExpand", void 0);
+    __decorate([
+        core_1.Input(),
         __metadata("design:type", Object),
         __metadata("design:paramtypes", [Object])
     ], DataTableBodyCellComponent.prototype, "group", null);
@@ -402,7 +419,7 @@ var DataTableBodyCellComponent = /** @class */ (function () {
         core_1.Component({
             selector: 'datatable-body-cell',
             changeDetection: core_1.ChangeDetectionStrategy.OnPush,
-            template: "\n    <div class=\"datatable-body-cell-label\">\n      <label\n        *ngIf=\"column.checkboxable && (!displayCheck || displayCheck(row, column, value))\"\n        class=\"datatable-checkbox\">\n        <input\n          type=\"checkbox\"\n          [checked]=\"isSelected\"\n          (click)=\"onCheckboxChange($event)\"\n        />\n      </label>\n      <span\n        *ngIf=\"!column.cellTemplate\"\n        [title]=\"sanitizedValue\"\n        [innerHTML]=\"value\">\n      </span>\n      <ng-template #cellTemplate\n        *ngIf=\"column.cellTemplate\"\n        [ngTemplateOutlet]=\"column.cellTemplate\"\n        [ngTemplateOutletContext]=\"cellContext\">\n      </ng-template>\n    </div>\n  "
+            template: "\n    <div class=\"datatable-body-cell-label\">\n      <button class=\"datatable-expand-responsible-column-btn\" (click)=\"toggleColumnExpand.emit(!columnExpanded)\" *ngIf=\"columnIndex === 0 && responsive\">{{columnExpanded ? '-' : '+'}}</button>\n      <label\n        *ngIf=\"column.checkboxable && (!displayCheck || displayCheck(row, column, value))\"\n        class=\"datatable-checkbox\">\n        <input\n          type=\"checkbox\"\n          [checked]=\"isSelected\"\n          (click)=\"onCheckboxChange($event)\"\n        />\n      </label>\n      <span\n        *ngIf=\"!column.cellTemplate\"\n        [title]=\"sanitizedValue\"\n        [innerHTML]=\"value\">\n      </span>\n      <ng-template #cellTemplate\n        *ngIf=\"column.cellTemplate\"\n        [ngTemplateOutlet]=\"column.cellTemplate\"\n        [ngTemplateOutletContext]=\"cellContext\">\n      </ng-template>\n    </div>\n  "
         }),
         __metadata("design:paramtypes", [core_1.ElementRef, core_1.ChangeDetectorRef])
     ], DataTableBodyCellComponent);
