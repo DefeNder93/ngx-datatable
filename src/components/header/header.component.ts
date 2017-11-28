@@ -1,10 +1,11 @@
 import {
-  Component, Output, EventEmitter, Input, HostBinding, ChangeDetectorRef, ChangeDetectionStrategy
+  Component, Output, EventEmitter, Input, HostBinding, OnInit, ChangeDetectorRef, ChangeDetectionStrategy
 } from '@angular/core';
 import { SortType, SelectionType } from '../../types';
 import { columnsByPin, columnGroupWidths, columnsByPinArr, translateXY } from '../../utils';
 import { DataTableColumnDirective } from '../columns';
 import { MouseEvent } from '../../events';
+import {Subject} from "rxjs/Subject";
 
 @Component({
   selector: 'datatable-header',
@@ -19,7 +20,7 @@ import { MouseEvent } from '../../events';
         [class]="'datatable-row-' + colGroup.type"
         [ngStyle]="_styleByGroup[colGroup.type]">
         <datatable-header-cell
-          *ngFor="let column of colGroup.columns; trackBy: columnTrackingFn"
+          *ngFor="let column of colGroup.columns | appVisible; trackBy: columnTrackingFn"
           resizeable
           [resizeEnabled]="column.resizeable"
           (resize)="onColumnResized($event, column)"
@@ -53,12 +54,27 @@ import { MouseEvent } from '../../events';
   },
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DataTableHeaderComponent {
+export class DataTableHeaderComponent implements OnInit{
+
+  ngOnInit(): void {
+    this._columnsByPin[1].columns.forEach(c => c._inViewbox = true);
+    this.columnsResize.subscribe(e => {
+      e.forEach((collapsed, i) => this._columnsByPin[1].columns[i]._inViewbox = collapsed);
+      this.cd.markForCheck();
+    });
+  }
+
+  constructor(private cd: ChangeDetectorRef) {}
 
   @Input() sortAscendingIcon: any;
   @Input() sortDescendingIcon: any;
   @Input() scrollbarH: boolean;
   @Input() dealsWithGroup: boolean;
+
+  @Input()
+  columnsResize: Subject<any>;
+
+  _innerWidth: number;
 
   @Input() set innerWidth(val: number) {
     this._innerWidth = val;
@@ -122,7 +138,6 @@ export class DataTableHeaderComponent {
 
   _columnsByPin: any;
   _columnGroupWidths: any;
-  _innerWidth: number;
   _offsetX: number;
   _columns: any[];
   _headerHeight: string;
@@ -131,8 +146,6 @@ export class DataTableHeaderComponent {
     center: {},
     right: {}
   };
-
-  constructor(private cd: ChangeDetectorRef) { }
 
   onLongPressStart({ event, model }: { event: any, model: any }) {
     model.dragging = true;

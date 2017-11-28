@@ -35,6 +35,7 @@ import {
 } from './directives';
 
 import { ScrollbarHelper } from './services';
+import {AppVisiblePipe} from './pipes/visible.pipe';
 
 @NgModule({
   imports: [
@@ -69,7 +70,8 @@ import { ScrollbarHelper } from './services';
     DataTableColumnHeaderDirective,
     DataTableColumnCellDirective,
     DatatableFooterDirective,
-    DatatableGroupHeaderTemplateDirective
+    DatatableGroupHeaderTemplateDirective,
+    AppVisiblePipe
   ],
   exports: [
     DatatableComponent,

@@ -171,6 +171,7 @@ import { Location, LocationStrategy, HashLocationStrategy } from '@angular/commo
         <column-standard-demo *ngIf="state === 'fixed'"></column-standard-demo>
         <column-force-demo *ngIf="state === 'force'"></column-force-demo>
         <column-pinning-demo *ngIf="state === 'pinning'"></column-pinning-demo>
+        <column-responsive-demo *ngIf="state === 'responsive2'"></column-responsive-demo>
       </content>
     </div>
   `

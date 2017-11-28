@@ -19,7 +19,9 @@ import { DatatableRowDetailDirective } from './row-detail';
 import { DatatableFooterDirective } from './footer';
 import { DataTableHeaderComponent } from './header';
 import { MouseEvent } from '../events';
+import {Subject} from "rxjs/Subject";
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+const $ = require("jquery");
 
 @Component({
   selector: 'ngx-datatable',
@@ -29,6 +31,7 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
       (visible)="recalculate()">
       <datatable-header
         *ngIf="headerHeight"
+        [columnsResize]="columnsResize"
         [sorts]="sorts"
         [sortType]="sortType"
         [scrollbarH]="scrollbarH"
@@ -50,6 +53,7 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
       </datatable-header>
       <datatable-body
         [groupRowsBy]="groupRowsBy"
+        [columnsResize]="columnsResize"
         [groupedRows]="groupedRows"
         [rows]="_internalRows"
         [groupExpansionDefault]="groupExpansionDefault"
@@ -107,6 +111,42 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
   }
 })
 export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
+
+  columnsResize: Subject<any> = new Subject();
+
+  windowResize$: Subject<any> = new Subject();
+
+  @Input() alwaysShownColumns: number[];
+  @Input() responsive: boolean;
+
+  setResponsivenessToColumns = () => this.columnsResize.next(this.getColumnsResizeMap());
+
+  getColumnsResizeMap = () => {
+    if (!this.responsive) {
+      return this._internalColumns.map(c => true)
+    }
+    const jEl = $(this.element);
+    const jDatatableHeader = jEl.find('.datatable-header');
+    let headerRightEdge = jDatatableHeader.offset().left + jDatatableHeader.outerWidth();
+    const jFirstColumn = jEl.find('.datatable-header-cell').first();
+    let shownWidthEdge = jFirstColumn.offset().left; // first column left edge
+    this.alwaysShownColumns && this.alwaysShownColumns.forEach(i => shownWidthEdge += this._internalColumns[i].width);
+    let resizeMap = [];
+    this._internalColumns.forEach((c, i) => {
+      if (this.alwaysShownColumns.indexOf(i) !== -1) {  // if the column should be always shown
+        resizeMap.push(true);
+        return;
+      }
+      shownWidthEdge += c.width;
+      if (headerRightEdge < shownWidthEdge) {
+        resizeMap.push(false);
+        return;
+      }
+      resizeMap.push(true);
+    });
+    return resizeMap;
+  }
+
 
   /**
    * Rows that are displayed in the table.
@@ -656,6 +696,10 @@ export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
     // if the table is hidden the visibility
     // listener will invoke this itself upon show
     this.recalculate();
+    setTimeout(() => {
+      this.setResponsivenessToColumns();
+    });
+    this.windowResize$.debounceTime(200).subscribe(m => this.setResponsivenessToColumns())
   }
 
   /**
@@ -775,6 +819,7 @@ export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
   @HostListener('window:resize')
   @throttleable(5)
   onWindowResize(): void {
+    this.windowResize$.next();
     this.recalculate();
   }
 

@@ -1,6 +1,6 @@
 import {
   Component, Input, HostBinding, ElementRef, Output, KeyValueDiffers, KeyValueDiffer,
-  EventEmitter, HostListener, ChangeDetectionStrategy, ChangeDetectorRef, DoCheck
+  EventEmitter, HostListener, ChangeDetectionStrategy, ChangeDetectorRef, DoCheck, OnInit
 } from '@angular/core';
 
 import {
@@ -8,6 +8,7 @@ import {
 } from '../../utils';
 import { ScrollbarHelper } from '../../services';
 import { MouseEvent, KeyboardEvent } from '../../events';
+import {Subject} from 'rxjs/Subject';
 
 @Component({
   selector: 'datatable-body-row',
@@ -16,24 +17,71 @@ import { MouseEvent, KeyboardEvent } from '../../events';
     <div
       *ngFor="let colGroup of _columnsByPin; let i = index; trackBy: trackByGroups"
       class="datatable-row-{{colGroup.type}} datatable-row-group"
+      style="flex-direction: column"
       [ngStyle]="_groupStyles[colGroup.type]">
-      <datatable-body-cell
-        *ngFor="let column of colGroup.columns; let ii = index; trackBy: columnTrackingFn"
-        tabindex="-1"
-        [row]="row"
-        [group]="group"
-        [expanded]="expanded"
-        [isSelected]="isSelected"
-        [rowIndex]="rowIndex"
-        [column]="column"
-        [rowHeight]="rowHeight"
-        [displayCheck]="displayCheck"
-        (activate)="onActivate($event, ii)">
-      </datatable-body-cell>
+
+      <div class="datatable-main-row">
+        <datatable-body-cell
+          *ngFor="let column of colGroup.columns | appVisible; let ii = index; trackBy: columnTrackingFn"
+          tabindex="-1"
+          [row]="row"
+          [group]="group"
+          [responsive]="responsive"
+          [expanded]="expanded"
+          [columnExpanded]="columnExpanded"
+          [isSelected]="isSelected"
+          [columnIndex]="ii"
+          [rowIndex]="rowIndex"
+          [column]="column"
+          [rowHeight]="rowHeight"
+          [displayCheck]="displayCheck"
+          (toggleColumnExpand)="toggleColumnExpand($event)"
+          (activate)="onActivate($event, ii)">
+        </datatable-body-cell>
+      </div>
+
+      <div *ngIf="columnExpanded" class="datatable-responsive-row">
+        <datatable-body-cell
+          *ngFor="let column of colGroup.columns | appVisible:true; let ii = index; trackBy: columnTrackingFn"
+          tabindex="-1"
+          [row]="row"
+          [group]="group"
+          [expanded]="expanded"
+          [isSelected]="isSelected"
+          [rowIndex]="rowIndex"
+          [column]="column"
+          [rowHeight]="rowHeight"
+          [displayCheck]="displayCheck"
+          (activate)="onActivate($event, ii)">
+        </datatable-body-cell>
+      </div>
     </div>      
-  `
+  `,
+  styles: [`
+    .datatable-responsive-row {
+      display: flex; 
+      flex-direction: column;
+    }
+    .datatable-main-row {
+      display: flex;
+    }
+  `]
 })
-export class DataTableBodyRowComponent implements DoCheck {
+export class DataTableBodyRowComponent implements DoCheck, OnInit {
+
+  responsive: boolean = false;
+
+  ngOnInit() {
+    this._columnsByPin[1].columns.forEach(c => c._inViewbox = true);
+    this.columnsResize.subscribe(e => {
+      e.forEach((collapsed, i) => this._columnsByPin[1].columns[i]._inViewbox = collapsed);
+      this.responsive = e.indexOf(false) !== -1;
+      this.cd.markForCheck();
+    });
+  }
+
+  @Input()
+  columnsResize: Subject<any>;
 
   @Input() set columns(val: any[]) {
     this._columns = val;
@@ -73,6 +121,9 @@ export class DataTableBodyRowComponent implements DoCheck {
     this.buildStylesByGroup();
   }
   get offsetX() { return this._offsetX; }
+
+  columnExpanded = false;
+  toggleColumnExpand = (e) => this.columnExpanded = !this.columnExpanded;
 
   @HostBinding('class')
   get cssClass() {

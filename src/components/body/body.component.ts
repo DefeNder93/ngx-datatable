@@ -1,11 +1,12 @@
 import {
   Component, Output, EventEmitter, Input, HostBinding, ChangeDetectorRef,
-  ViewChild, OnInit, OnDestroy, ChangeDetectionStrategy
+  ViewChild, OnInit, OnDestroy, ChangeDetectionStrategy, HostListener
 } from '@angular/core';
 import { translateXY, columnsByPin, columnGroupWidths, RowHeightCache } from '../../utils';
 import { SelectionType } from '../../types';
 import { ScrollerComponent } from './scroller.component';
 import { MouseEvent } from '../../events';
+import {Subject} from 'rxjs/Subject';
 
 @Component({
   selector: 'datatable-body',
@@ -56,6 +57,7 @@ import { MouseEvent } from '../../events';
             [expanded]="getRowExpanded(group)"            
             [rowClass]="rowClass"
             [displayCheck]="displayCheck"
+            [columnsResize]="columnsResize"
             (activate)="selector.onActivate($event, indexes.first + i)">
           </datatable-body-row>
           <ng-template #groupedRowsTemplate>
@@ -72,6 +74,7 @@ import { MouseEvent } from '../../events';
               [rowIndex]="getRowIndex(row)"
               [expanded]="getRowExpanded(row)"
               [rowClass]="rowClass"
+              [columnsResize]="columnsResize"
               (activate)="selector.onActivate($event, i)">
             </datatable-body-row>
           </ng-template>
@@ -111,6 +114,9 @@ export class DataTableBodyComponent implements OnInit, OnDestroy {
   @Input() groupExpansionDefault: boolean;
   @Input() innerWidth: number;
   @Input() groupRowsBy: string;
+
+  @Input()
+  columnsResize: Subject<any>;
 
   @Input() set pageSize(val: number) {
     this._pageSize = val;

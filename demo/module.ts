@@ -59,6 +59,7 @@ import { ColumnStandardComponent } from './columns/column-standard.component';
 import { ColumnForceComponent } from './columns/column-force.component';
 import { ColumnFlexComponent } from './columns/column-flex.component';
 import { ColumnPinningComponent } from './columns/pinning.component';
+import {ColumnResponsiveComponent} from './columns/column-responsive.component';
 
 @NgModule({
   declarations: [
@@ -104,7 +105,8 @@ import { ColumnPinningComponent } from './columns/pinning.component';
     DynamicHeightComponent,
     FooterDemoComponent,
     RowGroupingComponent,
-    BootstrapThemeComponent
+    BootstrapThemeComponent,
+    ColumnResponsiveComponent
   ],
   imports: [BrowserModule, NgxDatatableModule],
   bootstrap: [AppComponent]
