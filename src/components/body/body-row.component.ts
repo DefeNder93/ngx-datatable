@@ -74,8 +74,6 @@ export class DataTableBodyRowComponent implements DoCheck, OnInit {
   ngOnInit(){
     this.columnsByPin[1].columns.forEach(c => c._inViewbox = true);
     this.columnsResize.subscribe(e => {
-      // const lastColumn = this.columnsByPin[1].columns[this.columnsByPin[1].columns.length - 1];
-      // lastColumn._inViewbox = e;
       e.forEach((collapsed, i) => this.columnsByPin[1].columns[i]._inViewbox = collapsed);
       this.responsive = e.indexOf(false) !== -1;
       this.cd.markForCheck();
