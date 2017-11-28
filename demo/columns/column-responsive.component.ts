@@ -21,17 +21,27 @@ import { Component } from '@angular/core';
         [alwaysShownColumns]="[0]"
         [responsive]="true"
         [rowHeight]="'auto'">
-        <ngx-datatable-column name="Name" [width]="300">
+        <ngx-datatable-column name="Name" [width]="255">
           <ng-template let-value="value" ngx-datatable-cell-template>
             {{value}}
           </ng-template>
         </ngx-datatable-column>
-        <ngx-datatable-column name="Gender" [width]="300">
+        <ngx-datatable-column name="Gender" [width]="245">
           <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
             {{value}}
           </ng-template>
         </ngx-datatable-column>
-        <ngx-datatable-column name="Age" [width]="300">
+        <ngx-datatable-column name="Age" [width]="245">
+          <ng-template let-value="value" ngx-datatable-cell-template>
+            {{value}}
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column name="Favorite Color" prop="color" [width]="245">
+          <ng-template let-value="value" ngx-datatable-cell-template>
+            {{value}}
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column name="Description" [width]="288">
           <ng-template let-value="value" ngx-datatable-cell-template>
             {{value}}
           </ng-template>

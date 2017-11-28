@@ -130,7 +130,8 @@ export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
 
   setStickyHeader = () => {
     const jEl = $(this.element);
-    this.stickyHeader = jEl.offset().top < window.pageYOffset && jEl.offset().top + jEl.outerHeight() > window.pageYOffset;
+    const jDatatableHeader = jEl.find('.datatable-header');
+    this.stickyHeader = jEl.offset().top < window.pageYOffset && jEl.offset().top + jEl.outerHeight() > window.pageYOffset + jDatatableHeader.outerHeight();
     this.cd.markForCheck();
   }
 
