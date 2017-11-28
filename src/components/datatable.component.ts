@@ -40,6 +40,7 @@ const $ = require("jquery");
         [dealsWithGroup]="groupedRows"
         [columns]="_internalColumns"
         [headerHeight]="headerHeight"
+        [stickyHeader]="stickyHeader"
         [reorderable]="reorderable"
         [sortAscendingIcon]="cssClasses.sortAscending"
         [sortDescendingIcon]="cssClasses.sortDescending"
@@ -113,13 +114,24 @@ const $ = require("jquery");
 export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
 
   columnsResize: Subject<any> = new Subject();
-
   windowResize$: Subject<any> = new Subject();
+  windowScroll$: Subject<any> = new Subject();
+  stickyHeader: boolean;
 
   @Input() alwaysShownColumns: number[];
   @Input() responsive: boolean;
 
-  setResponsivenessToColumns = () => this.columnsResize.next(this.getColumnsResizeMap());
+  setResponsivenessToColumns = () => {
+    this.columnsResize.next(this.getColumnsResizeMap())
+  };
+
+  setStickyHeader = () => {
+    const jEl = $(this.element);
+    // const jDatatableHeader = jEl.find('.datatable-header');
+    // jDatatableHeader.offset().top
+    console.log('jEl.offset().top', jEl.offset().top, 'window.pageYOffset', window.pageYOffset);
+    this.stickyHeader = jEl.offset().top < window.pageYOffset && jEl.offset().top + jEl.outerHeight() > window.pageYOffset;
+  }
 
   getColumnsResizeMap = () => {
     if (!this.responsive) {
@@ -696,10 +708,8 @@ export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
     // if the table is hidden the visibility
     // listener will invoke this itself upon show
     this.recalculate();
-    setTimeout(() => {
-      this.setResponsivenessToColumns();
-    });
-    this.windowResize$.debounceTime(200).subscribe(m => this.setResponsivenessToColumns())
+    this.windowResize$.debounceTime(200).subscribe(m => this.setResponsivenessToColumns());
+    this.windowScroll$.debounceTime(100).subscribe(m => this.setStickyHeader());
   }
 
   /**
@@ -821,6 +831,12 @@ export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
   onWindowResize(): void {
     this.windowResize$.next();
     this.recalculate();
+  }
+
+  @HostListener('window:scroll')
+  @throttleable(5)
+  onWindowScroll(): void {
+    this.windowScroll$.next();
   }
 
   /**

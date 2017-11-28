@@ -14,6 +14,7 @@ import {Subject} from "rxjs/Subject";
       orderable
       (reorder)="onColumnReordered($event)"
       [style.width.px]="_columnGroupWidths.total"
+      [ngClass]="{'datatable-sticky-header': stickyHeader}"
       class="datatable-header-inner">
       <div
         *ngFor="let colGroup of _columnsByPin; trackBy: trackByGroups"
@@ -70,6 +71,7 @@ export class DataTableHeaderComponent implements OnInit{
   @Input() sortDescendingIcon: any;
   @Input() scrollbarH: boolean;
   @Input() dealsWithGroup: boolean;
+  @Input() stickyHeader: boolean;
 
   @Input()
   columnsResize: Subject<any>;
