@@ -117,10 +117,14 @@ export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
   windowResize$: Subject<any> = new Subject();
 
   @Input() alwaysShownColumns: number[];
+  @Input() responsive: boolean;
 
   setResponsivenessToColumns = () => this.columnsResize.next(this.getColumnsResizeMap());
 
   getColumnsResizeMap = () => {
+    if (!this.responsive) {
+      return this._internalColumns.map(c => true)
+    }
     const jEl = $(this.element);
     const jDatatableHeader = jEl.find('.datatable-header');
     let headerRightEdge = jDatatableHeader.offset().left + jDatatableHeader.outerWidth();
