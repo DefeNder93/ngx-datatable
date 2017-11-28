@@ -6,7 +6,7 @@ import { translateXY, columnsByPin, columnGroupWidths, RowHeightCache } from '..
 import { SelectionType } from '../../types';
 import { ScrollerComponent } from './scroller.component';
 import { MouseEvent } from '../../events';
-import {Subject} from "rxjs/Subject";
+import {Subject} from 'rxjs/Subject';
 
 @Component({
   selector: 'datatable-body',
@@ -29,7 +29,7 @@ import {Subject} from "rxjs/Subject";
         [scrollbarV]="scrollbarV"
         [scrollbarH]="scrollbarH"
         [scrollHeight]="scrollHeight"
-        [scrollWidth]="columnGroupWidths.total"
+        [scrollWidth]="columnGroupWidths?.total"
         (scroll)="onBodyScroll($event)">
         <datatable-row-wrapper
           [groupedRows]="groupedRows"
@@ -82,7 +82,7 @@ import {Subject} from "rxjs/Subject";
       </datatable-scroller>
       <div
         class="empty-row"
-        *ngIf="!rows?.length"
+        *ngIf="!rows?.length && !loadingIndicator"
         [innerHTML]="emptyMessage">
       </div>
     </datatable-selection>
@@ -397,7 +397,8 @@ export class DataTableBodyComponent implements OnInit, OnDestroy {
       }       
     }
     
-    this.temp = temp;   
+    this.temp = temp;
+    this.cd.detectChanges();
   }
 
   /**

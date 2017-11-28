@@ -1,5 +1,5 @@
 import {
-  Component, Output, EventEmitter, Input, HostBinding, OnInit, ChangeDetectorRef
+  Component, Output, EventEmitter, Input, HostBinding, OnInit, ChangeDetectorRef, ChangeDetectionStrategy
 } from '@angular/core';
 import { SortType, SelectionType } from '../../types';
 import { columnsByPin, columnGroupWidths, columnsByPinArr, translateXY } from '../../utils';
@@ -13,13 +13,12 @@ import {Subject} from "rxjs/Subject";
     <div
       orderable
       (reorder)="onColumnReordered($event)"
-      [style.width.px]="columnGroupWidths.total"
+      [style.width.px]="_columnGroupWidths.total"
       class="datatable-header-inner">
-     
       <div
-        *ngFor="let colGroup of columnsByPin; trackBy: trackByGroups"
+        *ngFor="let colGroup of _columnsByPin; trackBy: trackByGroups"
         [class]="'datatable-row-' + colGroup.type"
-        [ngStyle]="stylesByGroup(colGroup.type)">
+        [ngStyle]="_styleByGroup[colGroup.type]">
         <datatable-header-cell
           *ngFor="let column of colGroup.columns | appVisible; trackBy: columnTrackingFn"
           resizeable
@@ -52,14 +51,15 @@ import {Subject} from "rxjs/Subject";
   `,
   host: {
     class: 'datatable-header'
-  }
+  },
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DataTableHeaderComponent implements OnInit{
 
   ngOnInit(): void {
-    this.columnsByPin[1].columns.forEach(c => c._inViewbox = true);
+    this._columnsByPin[1].columns.forEach(c => c._inViewbox = true);
     this.columnsResize.subscribe(e => {
-      e.forEach((collapsed, i) => this.columnsByPin[1].columns[i]._inViewbox = collapsed);
+      e.forEach((collapsed, i) => this._columnsByPin[1].columns[i]._inViewbox = collapsed);
       this.cd.markForCheck();
     });
   }
@@ -81,7 +81,8 @@ export class DataTableHeaderComponent implements OnInit{
 
     if (this._columns) {    
       const colByPin = columnsByPin(this._columns);
-      this.columnGroupWidths = columnGroupWidths(colByPin, this._columns);       
+      this._columnGroupWidths = columnGroupWidths(colByPin, this._columns);
+      this.setStylesByGroup();
     }
   }
     
@@ -89,7 +90,6 @@ export class DataTableHeaderComponent implements OnInit{
     return this._innerWidth;
   }
 
-  @Input() offsetX: number;
   @Input() sorts: any[];
   @Input() sortType: SortType;
   @Input() allRowsSelected: boolean;
@@ -115,13 +115,20 @@ export class DataTableHeaderComponent implements OnInit{
     this._columns = val;    
 
     const colsByPin = columnsByPin(val);
-    this.columnsByPin = columnsByPinArr(val);
-    this.columnGroupWidths = columnGroupWidths(colsByPin, val);
+    this._columnsByPin = columnsByPinArr(val);
+    this._columnGroupWidths = columnGroupWidths(colsByPin, val);
   }
 
   get columns(): any[] {
     return this._columns;
   }
+
+  @Input()
+  set offsetX(val: number) {
+    this._offsetX = val;
+    this.setStylesByGroup();
+  }
+  get offsetX() { return this._offsetX; }
 
   @Output() sort: EventEmitter<any> = new EventEmitter();
   @Output() reorder: EventEmitter<any> = new EventEmitter();
@@ -129,10 +136,16 @@ export class DataTableHeaderComponent implements OnInit{
   @Output() select: EventEmitter<any> = new EventEmitter();
   @Output() columnContextmenu = new EventEmitter<{ event: MouseEvent, column: any }>(false);
 
-  columnsByPin: any;
-  columnGroupWidths: any;
+  _columnsByPin: any;
+  _columnGroupWidths: any;
+  _offsetX: number;
   _columns: any[];
   _headerHeight: string;
+  _styleByGroup = {
+    left: {},
+    center: {},
+    right: {}
+  };
 
   onLongPressStart({ event, model }: { event: any, model: any }) {
     model.dragging = true;
@@ -229,8 +242,15 @@ export class DataTableHeaderComponent implements OnInit{
     return sorts;
   }
 
-  stylesByGroup(group: string): any {
-    const widths = this.columnGroupWidths;
+  setStylesByGroup() {
+    this._styleByGroup['left'] = this.calcStylesByGroup('left');
+    this._styleByGroup['center'] = this.calcStylesByGroup('center');
+    this._styleByGroup['right'] = this.calcStylesByGroup('right');
+    this.cd.detectChanges();
+  }
+
+  calcStylesByGroup(group: string): any {
+    const widths = this._columnGroupWidths;
     const offsetX = this.offsetX;
 
     const styles = {
