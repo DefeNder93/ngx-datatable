@@ -112,18 +112,17 @@ export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
 
   columnsResize: Subject<any> = new Subject();
 
-  globalResizeTimer = null;
+  windowResize$: Subject<any> = new Subject();
 
   @Input() alwaysShownColumns: number[];
 
-  setResponsivenessToColumns = () => {
-    this.columnsResize.next(this.getColumnsResizeMap());
-  }
+  setResponsivenessToColumns = () => this.columnsResize.next(this.getColumnsResizeMap());
 
   getColumnsResizeMap = () => {
-    const jDatatableHeader = $('.datatable-header');
+    const jEl = $(this.element);
+    const jDatatableHeader = jEl.find('.datatable-header');
     let headerRightEdge = jDatatableHeader.offset().left + jDatatableHeader.outerWidth();
-    const jFirstColumn = $('.datatable-header-cell').first();
+    const jFirstColumn = jEl.find('.datatable-header-cell').first();
     let shownWidthEdge = jFirstColumn.offset().left; // first column left edge
     this.alwaysShownColumns && this.alwaysShownColumns.forEach(i => shownWidthEdge += this._internalColumns[i].width);
     let resizeMap = [];
@@ -677,8 +676,9 @@ export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
     // listener will invoke this itself upon show
     this.recalculate();
     setTimeout(() => {
-      this.columnsResize.next(this.getColumnsResizeMap());
+      this.setResponsivenessToColumns();
     });
+    this.windowResize$.debounceTime(200).subscribe(m => this.setResponsivenessToColumns())
   }
 
   /**
@@ -774,12 +774,7 @@ export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
   @HostListener('window:resize')
   @throttleable(5)
   onWindowResize(): void {
-
-    this.globalResizeTimer != null && window.clearTimeout(this.globalResizeTimer);
-    this.globalResizeTimer = window.setTimeout(() => {
-      this.setResponsivenessToColumns();
-    }, 200);
-
+    this.windowResize$.next();
     this.recalculate();
   }
 

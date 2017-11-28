@@ -20,7 +20,7 @@ import {Subject} from "rxjs/Subject";
       style="flex-direction: column"
       [ngStyle]="stylesByGroup(colGroup.type)">
 
-      <div class="datatable-main-row" style="display: flex">
+      <div class="datatable-main-row">
         <datatable-body-cell
           *ngFor="let column of colGroup.columns | appVisible; let ii = index; trackBy: columnTrackingFn"
           tabindex="-1"
@@ -40,8 +40,7 @@ import {Subject} from "rxjs/Subject";
         </datatable-body-cell>
       </div>
 
-      <div *ngIf="columnExpanded" class="datatable-responsive-row" style="display: flex; flex-direction: column;">
-        <!--[columnIndex]="ii"-->
+      <div *ngIf="columnExpanded" class="datatable-responsive-row">
         <datatable-body-cell
           *ngFor="let column of colGroup.columns | appVisible:true; let ii = index; trackBy: columnTrackingFn"
           tabindex="-1"
@@ -57,7 +56,16 @@ import {Subject} from "rxjs/Subject";
         </datatable-body-cell>
       </div>
     </div>      
-  `
+  `,
+  styles: [`
+    .datatable-responsive-row {
+      display: flex; 
+      flex-direction: column;
+    }
+    .datatable-main-row {
+      display: flex;
+    }
+  `]
 })
 export class DataTableBodyRowComponent implements DoCheck, OnInit {
 
