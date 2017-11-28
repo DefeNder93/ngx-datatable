@@ -117,25 +117,29 @@ export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
   @Input() alwaysShownColumns: number[];
 
   setResponsivenessToColumns = () => {
-    const lastColumn = this._internalColumns[this._internalColumns.length - 1];
-    const jLastColumn = $('.datatable-header-cell[title="' + lastColumn.name + '"]');
-    const jDatatableHeader = $('.datatable-header');
-    if (!jLastColumn.offset()) {
-      // header is hidden
-      this.columnsResize.next(this.getColumnsResizeMap());
-      return;
-    }
-    let lastColumnRightEdge = jLastColumn.offset().left + jLastColumn.outerWidth();
-    let headerRightEdge = jDatatableHeader.offset().left + jDatatableHeader.outerWidth();
-    const lastCellInViewport = headerRightEdge >= lastColumnRightEdge;
     this.columnsResize.next(this.getColumnsResizeMap());
-    // this.cd.markForCheck();
-    // this.recalcLayout();
   }
 
   getColumnsResizeMap = () => {
-    console.log('this.alwaysShownColumns', this.alwaysShownColumns);
-    return [true, true, false];
+    const jDatatableHeader = $('.datatable-header');
+    let headerRightEdge = jDatatableHeader.offset().left + jDatatableHeader.outerWidth();
+    const jFirstColumn = $('.datatable-header-cell').first();
+    let shownWidthEdge = jFirstColumn.offset().left; // first column left edge
+    this.alwaysShownColumns && this.alwaysShownColumns.forEach(i => shownWidthEdge += this._internalColumns[i].width);
+    let resizeMap = [];
+    this._internalColumns.forEach((c, i) => {
+      if (this.alwaysShownColumns.indexOf(i) !== -1) {  // if the column should be always shown
+        resizeMap.push(true);
+        return;
+      }
+      shownWidthEdge += c.width;
+      if (headerRightEdge < shownWidthEdge) {
+        resizeMap.push(false);
+        return;
+      }
+      resizeMap.push(true);
+    });
+    return resizeMap;
   }
 
 
