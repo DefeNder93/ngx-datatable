@@ -237,6 +237,8 @@ export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
       this._internalColumns = [...val];
       setColumnDefaults(this._internalColumns);
       this.recalculateColumns();
+      console.log('set columns setResponsivenessToColumns');
+      this.setResponsivenessToColumns();
     }
 
     this._columns = val;

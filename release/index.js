@@ -27809,6 +27809,8 @@ var DatatableComponent = /** @class */ (function () {
                 this._internalColumns = val.slice();
                 utils_1.setColumnDefaults(this._internalColumns);
                 this.recalculateColumns();
+                console.log('set columns setResponsivenessToColumns');
+                this.setResponsivenessToColumns();
             }
             this._columns = val;
         },
