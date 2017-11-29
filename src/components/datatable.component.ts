@@ -712,7 +712,6 @@ export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
     // if the table is hidden the visibility
     // listener will invoke this itself upon show
     this.recalculate();
-    setTimeout(() => this.setResponsivenessToColumns());
     this.windowResize$.debounceTime(200).subscribe(m => this.setResponsivenessToColumns());
     this.windowScroll$.debounceTime(100).subscribe(m => this.setStickyHeader());
   }
@@ -725,6 +724,7 @@ export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
     if (!this.externalSorting) {
       this._internalRows = sortRows(this._rows, this._internalColumns, this.sorts);
     }
+    setTimeout(() => this.setResponsivenessToColumns(), 200);
 
     // this has to be done to prevent the change detection
     // tree from freaking out because we are readjusting

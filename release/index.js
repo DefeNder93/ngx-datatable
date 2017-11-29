@@ -28019,7 +28019,6 @@ var DatatableComponent = /** @class */ (function () {
         // if the table is hidden the visibility
         // listener will invoke this itself upon show
         this.recalculate();
-        setTimeout(function () { return _this.setResponsivenessToColumns(); });
         this.windowResize$.debounceTime(200).subscribe(function (m) { return _this.setResponsivenessToColumns(); });
         this.windowScroll$.debounceTime(100).subscribe(function (m) { return _this.setStickyHeader(); });
     };
@@ -28032,6 +28031,7 @@ var DatatableComponent = /** @class */ (function () {
         if (!this.externalSorting) {
             this._internalRows = utils_1.sortRows(this._rows, this._internalColumns, this.sorts);
         }
+        setTimeout(function () { return _this.setResponsivenessToColumns(); }, 200);
         // this has to be done to prevent the change detection
         // tree from freaking out because we are readjusting
         requestAnimationFrame(function () {
