@@ -13,6 +13,7 @@ var components_1 = require("./components");
 var directives_1 = require("./directives");
 var services_1 = require("./services");
 var visible_pipe_1 = require("./pipes/visible.pipe");
+var row_shared_data_service_1 = require("./services/row-shared-data.service");
 var NgxDatatableModule = /** @class */ (function () {
     function NgxDatatableModule() {
     }
@@ -22,7 +23,8 @@ var NgxDatatableModule = /** @class */ (function () {
                 common_1.CommonModule
             ],
             providers: [
-                services_1.ScrollbarHelper
+                services_1.ScrollbarHelper,
+                row_shared_data_service_1.RowSharedData
             ],
             declarations: [
                 components_1.DataTableFooterTemplateDirective,

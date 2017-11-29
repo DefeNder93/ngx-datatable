@@ -9,6 +9,7 @@ import {
 import { ScrollbarHelper } from '../../services';
 import { MouseEvent, KeyboardEvent } from '../../events';
 import {Subject} from 'rxjs/Subject';
+import {RowSharedData} from '../../services/row-shared-data.service';
 
 @Component({
   selector: 'datatable-body-row',
@@ -75,12 +76,10 @@ export class DataTableBodyRowComponent implements DoCheck, OnInit {
 
   responsive: boolean = false;
 
-  @Input() columnResizeMap;
-
   ngOnInit() {
     this._columnsByPin[1].columns.forEach(c => c._inViewbox = true);
     this.columnsResize.subscribe(resizeMap => {
-      this.columnResizeMap = resizeMap;
+      this.rowSharedData.columnResizeMap = resizeMap;
       console.log('columns resize body', resizeMap);
       resizeMap.forEach((collapsed, i) => this._columnsByPin[1].columns[i]._inViewbox = collapsed);
       this.responsive = resizeMap.indexOf(false) !== -1;
@@ -182,7 +181,8 @@ export class DataTableBodyRowComponent implements DoCheck, OnInit {
   constructor(
       private differs: KeyValueDiffers,
       private scrollbarHelper: ScrollbarHelper,
-      private cd: ChangeDetectorRef, 
+      private cd: ChangeDetectorRef,
+      private rowSharedData: RowSharedData,
       element: ElementRef) {
     this._element = element.nativeElement;
     this._rowDiffer = differs.find({}).create();
@@ -276,7 +276,7 @@ export class DataTableBodyRowComponent implements DoCheck, OnInit {
     const colsByPin = columnsByPin(this._columns);
     this._columnsByPin = allColumnsByPinArr(this._columns);
     // console.log('recalculateColumns');
-    this.columnResizeMap && this.columnResizeMap.forEach((collapsed, i) => this._columnsByPin[1].columns[i]._inViewbox = collapsed);
+    this.rowSharedData.columnResizeMap && this.rowSharedData.columnResizeMap.forEach((collapsed, i) => this._columnsByPin[1].columns[i]._inViewbox = collapsed);
     this._columnGroupWidths = columnGroupWidths(colsByPin, this._columns);
   }
 

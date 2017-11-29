@@ -14,12 +14,14 @@ var utils_1 = require("../../utils");
 var services_1 = require("../../services");
 var events_1 = require("../../events");
 var Subject_1 = require("rxjs/Subject");
+var row_shared_data_service_1 = require("../../services/row-shared-data.service");
 var DataTableBodyRowComponent = /** @class */ (function () {
-    function DataTableBodyRowComponent(differs, scrollbarHelper, cd, element) {
+    function DataTableBodyRowComponent(differs, scrollbarHelper, cd, rowSharedData, element) {
         var _this = this;
         this.differs = differs;
         this.scrollbarHelper = scrollbarHelper;
         this.cd = cd;
+        this.rowSharedData = rowSharedData;
         this.responsive = false;
         this.columnExpanded = false;
         this.toggleColumnExpand = function (e) { return _this.columnExpanded = !_this.columnExpanded; };
@@ -36,7 +38,7 @@ var DataTableBodyRowComponent = /** @class */ (function () {
         var _this = this;
         this._columnsByPin[1].columns.forEach(function (c) { return c._inViewbox = true; });
         this.columnsResize.subscribe(function (resizeMap) {
-            _this.columnResizeMap = resizeMap;
+            _this.rowSharedData.columnResizeMap = resizeMap;
             console.log('columns resize body', resizeMap);
             resizeMap.forEach(function (collapsed, i) { return _this._columnsByPin[1].columns[i]._inViewbox = collapsed; });
             _this.responsive = resizeMap.indexOf(false) !== -1;
@@ -188,13 +190,9 @@ var DataTableBodyRowComponent = /** @class */ (function () {
         var colsByPin = utils_1.columnsByPin(this._columns);
         this._columnsByPin = utils_1.allColumnsByPinArr(this._columns);
         // console.log('recalculateColumns');
-        this.columnResizeMap && this.columnResizeMap.forEach(function (collapsed, i) { return _this._columnsByPin[1].columns[i]._inViewbox = collapsed; });
+        this.rowSharedData.columnResizeMap && this.rowSharedData.columnResizeMap.forEach(function (collapsed, i) { return _this._columnsByPin[1].columns[i]._inViewbox = collapsed; });
         this._columnGroupWidths = utils_1.columnGroupWidths(colsByPin, this._columns);
     };
-    __decorate([
-        core_1.Input(),
-        __metadata("design:type", Object)
-    ], DataTableBodyRowComponent.prototype, "columnResizeMap", void 0);
     __decorate([
         core_1.Input(),
         __metadata("design:type", Subject_1.Subject)
@@ -283,6 +281,7 @@ var DataTableBodyRowComponent = /** @class */ (function () {
         __metadata("design:paramtypes", [core_1.KeyValueDiffers,
             services_1.ScrollbarHelper,
             core_1.ChangeDetectorRef,
+            row_shared_data_service_1.RowSharedData,
             core_1.ElementRef])
     ], DataTableBodyRowComponent);
     return DataTableBodyRowComponent;

@@ -26,7 +26,6 @@ export declare class DataTableBodyComponent implements OnInit, OnDestroy {
     innerWidth: number;
     groupRowsBy: string;
     columnsResize: Subject<any>;
-    columnResizeMap: any;
     pageSize: number;
     rows: any[];
     columns: any[];

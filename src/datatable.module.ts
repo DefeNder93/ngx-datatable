@@ -36,13 +36,15 @@ import {
 
 import { ScrollbarHelper } from './services';
 import {AppVisiblePipe} from './pipes/visible.pipe';
+import {RowSharedData} from './services/row-shared-data.service';
 
 @NgModule({
   imports: [
     CommonModule
   ],
   providers: [
-    ScrollbarHelper
+    ScrollbarHelper,
+    RowSharedData
   ],
   declarations: [
     DataTableFooterTemplateDirective,

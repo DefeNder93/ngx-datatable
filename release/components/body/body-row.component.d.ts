@@ -1,12 +1,13 @@
 import { ElementRef, KeyValueDiffers, EventEmitter, ChangeDetectorRef, DoCheck, OnInit } from '@angular/core';
 import { ScrollbarHelper } from '../../services';
 import { Subject } from 'rxjs/Subject';
+import { RowSharedData } from '../../services/row-shared-data.service';
 export declare class DataTableBodyRowComponent implements DoCheck, OnInit {
     private differs;
     private scrollbarHelper;
     private cd;
+    private rowSharedData;
     responsive: boolean;
-    columnResizeMap: any;
     ngOnInit(): void;
     columnsResize: Subject<any>;
     columns: any[];
@@ -37,7 +38,7 @@ export declare class DataTableBodyRowComponent implements DoCheck, OnInit {
         right: {};
     };
     private _rowDiffer;
-    constructor(differs: KeyValueDiffers, scrollbarHelper: ScrollbarHelper, cd: ChangeDetectorRef, element: ElementRef);
+    constructor(differs: KeyValueDiffers, scrollbarHelper: ScrollbarHelper, cd: ChangeDetectorRef, rowSharedData: RowSharedData, element: ElementRef);
     ngDoCheck(): void;
     trackByGroups(index: number, colGroup: any): any;
     columnTrackingFn(index: number, column: any): any;

@@ -25958,12 +25958,14 @@ var utils_1 = __webpack_require__("./src/utils/index.ts");
 var services_1 = __webpack_require__("./src/services/index.ts");
 var events_1 = __webpack_require__("./src/events.ts");
 var Subject_1 = __webpack_require__("./node_modules/rxjs/Subject.js");
+var row_shared_data_service_1 = __webpack_require__("./src/services/row-shared-data.service.ts");
 var DataTableBodyRowComponent = /** @class */ (function () {
-    function DataTableBodyRowComponent(differs, scrollbarHelper, cd, element) {
+    function DataTableBodyRowComponent(differs, scrollbarHelper, cd, rowSharedData, element) {
         var _this = this;
         this.differs = differs;
         this.scrollbarHelper = scrollbarHelper;
         this.cd = cd;
+        this.rowSharedData = rowSharedData;
         this.responsive = false;
         this.columnExpanded = false;
         this.toggleColumnExpand = function (e) { return _this.columnExpanded = !_this.columnExpanded; };
@@ -25980,7 +25982,7 @@ var DataTableBodyRowComponent = /** @class */ (function () {
         var _this = this;
         this._columnsByPin[1].columns.forEach(function (c) { return c._inViewbox = true; });
         this.columnsResize.subscribe(function (resizeMap) {
-            _this.columnResizeMap = resizeMap;
+            _this.rowSharedData.columnResizeMap = resizeMap;
             console.log('columns resize body', resizeMap);
             resizeMap.forEach(function (collapsed, i) { return _this._columnsByPin[1].columns[i]._inViewbox = collapsed; });
             _this.responsive = resizeMap.indexOf(false) !== -1;
@@ -26132,13 +26134,9 @@ var DataTableBodyRowComponent = /** @class */ (function () {
         var colsByPin = utils_1.columnsByPin(this._columns);
         this._columnsByPin = utils_1.allColumnsByPinArr(this._columns);
         // console.log('recalculateColumns');
-        this.columnResizeMap && this.columnResizeMap.forEach(function (collapsed, i) { return _this._columnsByPin[1].columns[i]._inViewbox = collapsed; });
+        this.rowSharedData.columnResizeMap && this.rowSharedData.columnResizeMap.forEach(function (collapsed, i) { return _this._columnsByPin[1].columns[i]._inViewbox = collapsed; });
         this._columnGroupWidths = utils_1.columnGroupWidths(colsByPin, this._columns);
     };
-    __decorate([
-        core_1.Input(),
-        __metadata("design:type", Object)
-    ], DataTableBodyRowComponent.prototype, "columnResizeMap", void 0);
     __decorate([
         core_1.Input(),
         __metadata("design:type", Subject_1.Subject)
@@ -26227,6 +26225,7 @@ var DataTableBodyRowComponent = /** @class */ (function () {
         __metadata("design:paramtypes", [core_1.KeyValueDiffers,
             services_1.ScrollbarHelper,
             core_1.ChangeDetectorRef,
+            row_shared_data_service_1.RowSharedData,
             core_1.ElementRef])
     ], DataTableBodyRowComponent);
     return DataTableBodyRowComponent;
@@ -26264,7 +26263,6 @@ var DataTableBodyComponent = /** @class */ (function () {
         var _this = this;
         this.cd = cd;
         this.selected = [];
-        this.columnResizeMap = null; // this map is shared between all rows
         this.scroll = new core_1.EventEmitter();
         this.page = new core_1.EventEmitter();
         this.activate = new core_1.EventEmitter();
@@ -26946,7 +26944,7 @@ var DataTableBodyComponent = /** @class */ (function () {
     DataTableBodyComponent = __decorate([
         core_1.Component({
             selector: 'datatable-body',
-            template: "\n    <datatable-selection\n      #selector\n      [selected]=\"selected\"\n      [rows]=\"rows\"\n      [selectCheck]=\"selectCheck\"\n      [selectEnabled]=\"selectEnabled\"\n      [selectionType]=\"selectionType\"\n      [rowIdentity]=\"rowIdentity\"\n      (select)=\"select.emit($event)\"\n      (activate)=\"activate.emit($event)\">\n      <datatable-progress\n        *ngIf=\"loadingIndicator\">\n      </datatable-progress>\n      <datatable-scroller\n        *ngIf=\"rows?.length\"\n        [scrollbarV]=\"scrollbarV\"\n        [scrollbarH]=\"scrollbarH\"\n        [scrollHeight]=\"scrollHeight\"\n        [scrollWidth]=\"columnGroupWidths?.total\"\n        (scroll)=\"onBodyScroll($event)\">\n        <datatable-row-wrapper\n          [groupedRows]=\"groupedRows\"\n          *ngFor=\"let group of temp; let i = index; trackBy: rowTrackingFn;\"\n          [innerWidth]=\"innerWidth\"\n          [ngStyle]=\"getRowsStyles(group)\"\n          [rowDetail]=\"rowDetail\"\n          [groupHeader]=\"groupHeader\"\n          [offsetX]=\"offsetX\"\n          [detailRowHeight]=\"getDetailRowHeight(group[i],i)\"\n          [row]=\"group\"\n          [expanded]=\"getRowExpanded(group)\"\n          [rowIndex]=\"getRowIndex(group[i])\"\n          (rowContextmenu)=\"rowContextmenu.emit($event)\">\n          <datatable-body-row \n            *ngIf=\"!groupedRows; else groupedRowsTemplate\"        \n            tabindex=\"-1\"\n            [isSelected]=\"selector.getRowSelected(group)\"\n            [innerWidth]=\"innerWidth\"\n            [offsetX]=\"offsetX\"\n            [columns]=\"columns\"\n            [rowHeight]=\"getRowHeight(group)\"\n            [row]=\"group\"\n            [rowIndex]=\"getRowIndex(group)\"\n            [expanded]=\"getRowExpanded(group)\"            \n            [rowClass]=\"rowClass\"\n            [displayCheck]=\"displayCheck\"\n            [columnsResize]=\"columnsResize\"\n            [columnResizeMap]=\"columnResizeMap\"\n            (activate)=\"selector.onActivate($event, indexes.first + i)\">\n          </datatable-body-row>\n          <ng-template #groupedRowsTemplate>\n            <datatable-body-row\n              *ngFor=\"let row of group.value; let i = index; trackBy: rowTrackingFn;\"\n              tabindex=\"-1\"\n              [isSelected]=\"selector.getRowSelected(row)\"\n              [innerWidth]=\"innerWidth\"\n              [offsetX]=\"offsetX\"\n              [columns]=\"columns\"\n              [rowHeight]=\"getRowHeight(row)\"\n              [row]=\"row\"\n              [group]=\"group.value\"\n              [rowIndex]=\"getRowIndex(row)\"\n              [expanded]=\"getRowExpanded(row)\"\n              [rowClass]=\"rowClass\"\n              [columnsResize]=\"columnsResize\"\n              [columnResizeMap]=\"columnResizeMap\"\n              (activate)=\"selector.onActivate($event, i)\">\n            </datatable-body-row>\n          </ng-template>\n        </datatable-row-wrapper>\n      </datatable-scroller>\n      <div\n        class=\"empty-row\"\n        *ngIf=\"!rows?.length && !loadingIndicator\"\n        [innerHTML]=\"emptyMessage\">\n      </div>\n    </datatable-selection>\n  ",
+            template: "\n    <datatable-selection\n      #selector\n      [selected]=\"selected\"\n      [rows]=\"rows\"\n      [selectCheck]=\"selectCheck\"\n      [selectEnabled]=\"selectEnabled\"\n      [selectionType]=\"selectionType\"\n      [rowIdentity]=\"rowIdentity\"\n      (select)=\"select.emit($event)\"\n      (activate)=\"activate.emit($event)\">\n      <datatable-progress\n        *ngIf=\"loadingIndicator\">\n      </datatable-progress>\n      <datatable-scroller\n        *ngIf=\"rows?.length\"\n        [scrollbarV]=\"scrollbarV\"\n        [scrollbarH]=\"scrollbarH\"\n        [scrollHeight]=\"scrollHeight\"\n        [scrollWidth]=\"columnGroupWidths?.total\"\n        (scroll)=\"onBodyScroll($event)\">\n        <datatable-row-wrapper\n          [groupedRows]=\"groupedRows\"\n          *ngFor=\"let group of temp; let i = index; trackBy: rowTrackingFn;\"\n          [innerWidth]=\"innerWidth\"\n          [ngStyle]=\"getRowsStyles(group)\"\n          [rowDetail]=\"rowDetail\"\n          [groupHeader]=\"groupHeader\"\n          [offsetX]=\"offsetX\"\n          [detailRowHeight]=\"getDetailRowHeight(group[i],i)\"\n          [row]=\"group\"\n          [expanded]=\"getRowExpanded(group)\"\n          [rowIndex]=\"getRowIndex(group[i])\"\n          (rowContextmenu)=\"rowContextmenu.emit($event)\">\n          <datatable-body-row \n            *ngIf=\"!groupedRows; else groupedRowsTemplate\"        \n            tabindex=\"-1\"\n            [isSelected]=\"selector.getRowSelected(group)\"\n            [innerWidth]=\"innerWidth\"\n            [offsetX]=\"offsetX\"\n            [columns]=\"columns\"\n            [rowHeight]=\"getRowHeight(group)\"\n            [row]=\"group\"\n            [rowIndex]=\"getRowIndex(group)\"\n            [expanded]=\"getRowExpanded(group)\"            \n            [rowClass]=\"rowClass\"\n            [displayCheck]=\"displayCheck\"\n            [columnsResize]=\"columnsResize\"\n            (activate)=\"selector.onActivate($event, indexes.first + i)\">\n          </datatable-body-row>\n          <ng-template #groupedRowsTemplate>\n            <datatable-body-row\n              *ngFor=\"let row of group.value; let i = index; trackBy: rowTrackingFn;\"\n              tabindex=\"-1\"\n              [isSelected]=\"selector.getRowSelected(row)\"\n              [innerWidth]=\"innerWidth\"\n              [offsetX]=\"offsetX\"\n              [columns]=\"columns\"\n              [rowHeight]=\"getRowHeight(row)\"\n              [row]=\"row\"\n              [group]=\"group.value\"\n              [rowIndex]=\"getRowIndex(row)\"\n              [expanded]=\"getRowExpanded(row)\"\n              [rowClass]=\"rowClass\"\n              [columnsResize]=\"columnsResize\"\n              (activate)=\"selector.onActivate($event, i)\">\n            </datatable-body-row>\n          </ng-template>\n        </datatable-row-wrapper>\n      </datatable-scroller>\n      <div\n        class=\"empty-row\"\n        *ngIf=\"!rows?.length && !loadingIndicator\"\n        [innerHTML]=\"emptyMessage\">\n      </div>\n    </datatable-selection>\n  ",
             changeDetection: core_1.ChangeDetectionStrategy.OnPush,
             host: {
                 class: 'datatable-body'
@@ -29840,6 +29838,7 @@ var components_1 = __webpack_require__("./src/components/index.ts");
 var directives_1 = __webpack_require__("./src/directives/index.ts");
 var services_1 = __webpack_require__("./src/services/index.ts");
 var visible_pipe_1 = __webpack_require__("./src/pipes/visible.pipe.ts");
+var row_shared_data_service_1 = __webpack_require__("./src/services/row-shared-data.service.ts");
 var NgxDatatableModule = /** @class */ (function () {
     function NgxDatatableModule() {
     }
@@ -29849,7 +29848,8 @@ var NgxDatatableModule = /** @class */ (function () {
                 common_1.CommonModule
             ],
             providers: [
-                services_1.ScrollbarHelper
+                services_1.ScrollbarHelper,
+                row_shared_data_service_1.RowSharedData
             ],
             declarations: [
                 components_1.DataTableFooterTemplateDirective,
@@ -30636,6 +30636,37 @@ function __export(m) {
 }
 Object.defineProperty(exports, "__esModule", { value: true });
 __export(__webpack_require__("./src/services/scrollbar-helper.service.ts"));
+
+
+/***/ }),
+
+/***/ "./src/services/row-shared-data.service.ts":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var core_1 = __webpack_require__("@angular/core");
+/**
+ * Gets the width of the scrollbar.  Nesc for windows
+ * http://stackoverflow.com/a/13382873/888165
+ */
+var RowSharedData = /** @class */ (function () {
+    function RowSharedData() {
+        this.columnResizeMap = null;
+    }
+    RowSharedData = __decorate([
+        core_1.Injectable()
+    ], RowSharedData);
+    return RowSharedData;
+}());
+exports.RowSharedData = RowSharedData;
 
 
 /***/ }),
