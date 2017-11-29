@@ -184,13 +184,12 @@ var DataTableBodyRowComponent = /** @class */ (function () {
         });
     };
     DataTableBodyRowComponent.prototype.recalculateColumns = function (val) {
-        var _this = this;
         if (val === void 0) { val = this.columns; }
         this._columns = val;
         var colsByPin = utils_1.columnsByPin(this._columns);
         this._columnsByPin = utils_1.allColumnsByPinArr(this._columns);
-        console.log('recalculateColumns');
-        this.rowSharedData.columnResizeMap && this.rowSharedData.columnResizeMap.forEach(function (collapsed, i) { return _this._columnsByPin[1].columns[i]._inViewbox = collapsed; });
+        // console.log('recalculateColumns');
+        // this.rowSharedData.columnResizeMap && this.rowSharedData.columnResizeMap.forEach((collapsed, i) => this._columnsByPin[1].columns[i]._inViewbox = collapsed);
         this._columnGroupWidths = utils_1.columnGroupWidths(colsByPin, this._columns);
         this.cd.markForCheck();
     };

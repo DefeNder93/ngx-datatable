@@ -275,8 +275,8 @@ export class DataTableBodyRowComponent implements DoCheck, OnInit {
     this._columns = val;
     const colsByPin = columnsByPin(this._columns);
     this._columnsByPin = allColumnsByPinArr(this._columns);
-    console.log('recalculateColumns');
-    this.rowSharedData.columnResizeMap && this.rowSharedData.columnResizeMap.forEach((collapsed, i) => this._columnsByPin[1].columns[i]._inViewbox = collapsed);
+    // console.log('recalculateColumns');
+    // this.rowSharedData.columnResizeMap && this.rowSharedData.columnResizeMap.forEach((collapsed, i) => this._columnsByPin[1].columns[i]._inViewbox = collapsed);
     this._columnGroupWidths = columnGroupWidths(colsByPin, this._columns);
     this.cd.markForCheck();
   }
