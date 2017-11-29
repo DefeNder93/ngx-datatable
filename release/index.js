@@ -27571,7 +27571,8 @@ var DatatableComponent = /** @class */ (function () {
             }
             var jEl = $(_this.element);
             var jDatatableHeader = jEl.find('.datatable-header');
-            var headerRightEdge = jDatatableHeader.offset().left + jDatatableHeader.outerWidth();
+            var eps = 3;
+            var headerRightEdge = jDatatableHeader.offset().left + jDatatableHeader.outerWidth() + eps;
             var jFirstColumn = jEl.find('.datatable-header-cell').first();
             var shownWidthEdge = jFirstColumn.offset().left; // first column left edge
             _this.alwaysShownColumns && _this.alwaysShownColumns.forEach(function (i) { return shownWidthEdge += _this._internalColumns[i].width; });

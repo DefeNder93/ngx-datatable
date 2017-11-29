@@ -141,7 +141,8 @@ export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
     }
     const jEl = $(this.element);
     const jDatatableHeader = jEl.find('.datatable-header');
-    let headerRightEdge = jDatatableHeader.offset().left + jDatatableHeader.outerWidth();
+    const eps = 3;
+    let headerRightEdge = jDatatableHeader.offset().left + jDatatableHeader.outerWidth() + eps;
     const jFirstColumn = jEl.find('.datatable-header-cell').first();
     let shownWidthEdge = jFirstColumn.offset().left; // first column left edge
     this.alwaysShownColumns && this.alwaysShownColumns.forEach(i => shownWidthEdge += this._internalColumns[i].width);
