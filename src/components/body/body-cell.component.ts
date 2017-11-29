@@ -13,6 +13,9 @@ import { MouseEvent, KeyboardEvent } from '../../events';
   selector: 'datatable-body-cell',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
+    <div class="datatable-body-column-name">
+      {{column.name}}
+    </div>
     <div class="datatable-body-cell-label">
       <button class="datatable-expand-responsible-column-btn" (click)="toggleColumnExpand.emit(!columnExpanded)" *ngIf="columnIndex === 0 && responsive">{{columnExpanded ? '-' : '+'}}</button>
       <label
@@ -35,7 +38,14 @@ import { MouseEvent, KeyboardEvent } from '../../events';
         [ngTemplateOutletContext]="cellContext">
       </ng-template>
     </div>
-  `
+  `,
+  styles: [
+    `
+      .datatable-body-column-name {
+        display: none;
+      }
+    `
+  ]
 })
 export class DataTableBodyCellComponent implements DoCheck, OnDestroy {
   @Input() displayCheck: any;

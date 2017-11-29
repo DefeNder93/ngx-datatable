@@ -158,6 +158,7 @@ export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
       }
       resizeMap.push(true);
     });
+    console.log('headerRightEdge', headerRightEdge, 'shownWidthEdge', shownWidthEdge, 'resizeMap', resizeMap);
     return resizeMap;
   }
 

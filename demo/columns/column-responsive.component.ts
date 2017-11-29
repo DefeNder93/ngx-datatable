@@ -15,33 +15,33 @@ import { Component } from '@angular/core';
       <ngx-datatable
         class="material"
         [rows]="rows"
-        [columnMode]="'standard'"
+        [columnMode]="'force'"
         [headerHeight]="50"
         [footerHeight]="50"
         [alwaysShownColumns]="[0]"
         [responsive]="true"
         [rowHeight]="'auto'">
-        <ngx-datatable-column name="Name" [width]="255">
+        <ngx-datatable-column name="Name" [minWidth]="200">
           <ng-template let-value="value" ngx-datatable-cell-template>
             {{value}}
           </ng-template>
         </ngx-datatable-column>
-        <ngx-datatable-column name="Gender" [width]="245">
+        <ngx-datatable-column name="Gender" [minWidth]="200">
           <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
             {{value}}
           </ng-template>
         </ngx-datatable-column>
-        <ngx-datatable-column name="Age" [width]="245">
+        <ngx-datatable-column name="Age" [minWidth]="200">
           <ng-template let-value="value" ngx-datatable-cell-template>
             {{value}}
           </ng-template>
         </ngx-datatable-column>
-        <ngx-datatable-column name="Favorite Color" prop="color" [width]="245">
+        <ngx-datatable-column name="Favorite Color" prop="color" [minWidth]="200">
           <ng-template let-value="value" ngx-datatable-cell-template>
             {{value}}
           </ng-template>
         </ngx-datatable-column>
-        <ngx-datatable-column name="Description" [width]="288">
+        <ngx-datatable-column name="Description" [minWidth]="200">
           <ng-template let-value="value" ngx-datatable-cell-template>
             {{value}}
           </ng-template>

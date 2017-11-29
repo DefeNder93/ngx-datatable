@@ -65,7 +65,11 @@ import {Subject} from 'rxjs/Subject';
     .datatable-main-row {
       display: flex;
     }
+    .datatable-responsive-row /deep/ .datatable-body-column-name {
+      display: block;
+    }
   `]
+
 })
 export class DataTableBodyRowComponent implements DoCheck, OnInit {
 
@@ -74,6 +78,7 @@ export class DataTableBodyRowComponent implements DoCheck, OnInit {
   ngOnInit() {
     this._columnsByPin[1].columns.forEach(c => c._inViewbox = true);
     this.columnsResize.subscribe(e => {
+      console.log('columns resize body', e);
       e.forEach((collapsed, i) => this._columnsByPin[1].columns[i]._inViewbox = collapsed);
       this.responsive = e.indexOf(false) !== -1;
       this.cd.markForCheck();

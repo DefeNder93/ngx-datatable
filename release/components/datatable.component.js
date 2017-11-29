@@ -72,6 +72,7 @@ var DatatableComponent = /** @class */ (function () {
                 }
                 resizeMap.push(true);
             });
+            console.log('headerRightEdge', headerRightEdge, 'shownWidthEdge', shownWidthEdge, 'resizeMap', resizeMap);
             return resizeMap;
         };
         /**

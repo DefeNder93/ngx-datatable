@@ -25668,7 +25668,10 @@ var DataTableBodyCellComponent = /** @class */ (function () {
         core_1.Component({
             selector: 'datatable-body-cell',
             changeDetection: core_1.ChangeDetectionStrategy.OnPush,
-            template: "\n    <div class=\"datatable-body-cell-label\">\n      <button class=\"datatable-expand-responsible-column-btn\" (click)=\"toggleColumnExpand.emit(!columnExpanded)\" *ngIf=\"columnIndex === 0 && responsive\">{{columnExpanded ? '-' : '+'}}</button>\n      <label\n        *ngIf=\"column.checkboxable && (!displayCheck || displayCheck(row, column, value))\"\n        class=\"datatable-checkbox\">\n        <input\n          type=\"checkbox\"\n          [checked]=\"isSelected\"\n          (click)=\"onCheckboxChange($event)\"\n        />\n      </label>\n      <span\n        *ngIf=\"!column.cellTemplate\"\n        [title]=\"sanitizedValue\"\n        [innerHTML]=\"value\">\n      </span>\n      <ng-template #cellTemplate\n        *ngIf=\"column.cellTemplate\"\n        [ngTemplateOutlet]=\"column.cellTemplate\"\n        [ngTemplateOutletContext]=\"cellContext\">\n      </ng-template>\n    </div>\n  "
+            template: "\n    <div class=\"datatable-body-column-name\">\n      {{column.name}}\n    </div>\n    <div class=\"datatable-body-cell-label\">\n      <button class=\"datatable-expand-responsible-column-btn\" (click)=\"toggleColumnExpand.emit(!columnExpanded)\" *ngIf=\"columnIndex === 0 && responsive\">{{columnExpanded ? '-' : '+'}}</button>\n      <label\n        *ngIf=\"column.checkboxable && (!displayCheck || displayCheck(row, column, value))\"\n        class=\"datatable-checkbox\">\n        <input\n          type=\"checkbox\"\n          [checked]=\"isSelected\"\n          (click)=\"onCheckboxChange($event)\"\n        />\n      </label>\n      <span\n        *ngIf=\"!column.cellTemplate\"\n        [title]=\"sanitizedValue\"\n        [innerHTML]=\"value\">\n      </span>\n      <ng-template #cellTemplate\n        *ngIf=\"column.cellTemplate\"\n        [ngTemplateOutlet]=\"column.cellTemplate\"\n        [ngTemplateOutletContext]=\"cellContext\">\n      </ng-template>\n    </div>\n  ",
+            styles: [
+                "\n      .datatable-body-column-name {\n        display: none;\n      }\n    "
+            ]
         }),
         __metadata("design:paramtypes", [core_1.ElementRef, core_1.ChangeDetectorRef])
     ], DataTableBodyCellComponent);
@@ -25977,6 +25980,7 @@ var DataTableBodyRowComponent = /** @class */ (function () {
         var _this = this;
         this._columnsByPin[1].columns.forEach(function (c) { return c._inViewbox = true; });
         this.columnsResize.subscribe(function (e) {
+            console.log('columns resize body', e);
             e.forEach(function (collapsed, i) { return _this._columnsByPin[1].columns[i]._inViewbox = collapsed; });
             _this.responsive = e.indexOf(false) !== -1;
             _this.cd.markForCheck();
@@ -26210,7 +26214,7 @@ var DataTableBodyRowComponent = /** @class */ (function () {
             selector: 'datatable-body-row',
             changeDetection: core_1.ChangeDetectionStrategy.OnPush,
             template: "\n    <div\n      *ngFor=\"let colGroup of _columnsByPin; let i = index; trackBy: trackByGroups\"\n      class=\"datatable-row-{{colGroup.type}} datatable-row-group\"\n      style=\"flex-direction: column\"\n      [ngStyle]=\"_groupStyles[colGroup.type]\">\n\n      <div class=\"datatable-main-row\">\n        <datatable-body-cell\n          *ngFor=\"let column of colGroup.columns | appVisible; let ii = index; trackBy: columnTrackingFn\"\n          tabindex=\"-1\"\n          [row]=\"row\"\n          [group]=\"group\"\n          [responsive]=\"responsive\"\n          [expanded]=\"expanded\"\n          [columnExpanded]=\"columnExpanded\"\n          [isSelected]=\"isSelected\"\n          [columnIndex]=\"ii\"\n          [rowIndex]=\"rowIndex\"\n          [column]=\"column\"\n          [rowHeight]=\"rowHeight\"\n          [displayCheck]=\"displayCheck\"\n          (toggleColumnExpand)=\"toggleColumnExpand($event)\"\n          (activate)=\"onActivate($event, ii)\">\n        </datatable-body-cell>\n      </div>\n\n      <div *ngIf=\"columnExpanded\" class=\"datatable-responsive-row\">\n        <datatable-body-cell\n          *ngFor=\"let column of colGroup.columns | appVisible:true; let ii = index; trackBy: columnTrackingFn\"\n          tabindex=\"-1\"\n          [row]=\"row\"\n          [group]=\"group\"\n          [expanded]=\"expanded\"\n          [isSelected]=\"isSelected\"\n          [rowIndex]=\"rowIndex\"\n          [column]=\"column\"\n          [rowHeight]=\"rowHeight\"\n          [displayCheck]=\"displayCheck\"\n          (activate)=\"onActivate($event, ii)\">\n        </datatable-body-cell>\n      </div>\n    </div>      \n  ",
-            styles: ["\n    .datatable-responsive-row {\n      display: flex; \n      flex-direction: column;\n    }\n    .datatable-main-row {\n      display: flex;\n    }\n  "]
+            styles: ["\n    .datatable-responsive-row {\n      display: flex; \n      flex-direction: column;\n    }\n    .datatable-main-row {\n      display: flex;\n    }\n    .datatable-responsive-row /deep/ .datatable-body-column-name {\n      display: block;\n    }\n  "]
         }),
         __metadata("design:paramtypes", [core_1.KeyValueDiffers,
             services_1.ScrollbarHelper,
@@ -27584,6 +27588,7 @@ var DatatableComponent = /** @class */ (function () {
                 }
                 resizeMap.push(true);
             });
+            console.log('headerRightEdge', headerRightEdge, 'shownWidthEdge', shownWidthEdge, 'resizeMap', resizeMap);
             return resizeMap;
         };
         /**
@@ -29357,6 +29362,7 @@ var DataTableHeaderComponent = /** @class */ (function () {
         var _this = this;
         this._columnsByPin[1].columns.forEach(function (c) { return c._inViewbox = true; });
         this.columnsResize.subscribe(function (e) {
+            console.log('columns resize header', e);
             e.forEach(function (collapsed, i) { return _this._columnsByPin[1].columns[i]._inViewbox = collapsed; });
             _this.cd.markForCheck();
         });
