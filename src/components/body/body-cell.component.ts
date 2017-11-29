@@ -17,7 +17,9 @@ import { MouseEvent, KeyboardEvent } from '../../events';
       {{column.name}}
     </div>
     <div class="datatable-body-cell-label">
-      <button class="datatable-expand-responsible-column-btn" (click)="toggleColumnExpand.emit(!columnExpanded)" *ngIf="columnIndex === 0 && responsive">{{columnExpanded ? '-' : '+'}}</button>
+      <button class="datatable-expand-responsible-column-btn" (click)="toggleColumnExpand.emit(!columnExpanded)" *ngIf="columnIndex === 0 && responsive">
+        <span>{{columnExpanded ? '-' : '+'}}</span>
+      </button>
       <label
         *ngIf="column.checkboxable && (!displayCheck || displayCheck(row, column, value))"
         class="datatable-checkbox">
