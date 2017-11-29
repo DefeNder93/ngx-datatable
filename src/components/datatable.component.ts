@@ -138,7 +138,7 @@ export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
   getColumnsResizeMap = () => {
     const jEl = $(this.element);
     const jDatatableHeader = jEl.find('.datatable-header');
-    if (!this.responsive && !jDatatableHeader.length) {
+    if (!this.responsive || !jDatatableHeader.length) {
       return this._internalColumns.map(c => true)
     }
     const eps = 3;

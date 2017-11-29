@@ -27575,7 +27575,7 @@ var DatatableComponent = /** @class */ (function () {
         this.getColumnsResizeMap = function () {
             var jEl = $(_this.element);
             var jDatatableHeader = jEl.find('.datatable-header');
-            if (!_this.responsive && !jDatatableHeader.length) {
+            if (!_this.responsive || !jDatatableHeader.length) {
                 return _this._internalColumns.map(function (c) { return true; });
             }
             var eps = 3;
