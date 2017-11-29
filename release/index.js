@@ -28212,6 +28212,7 @@ var DatatableComponent = /** @class */ (function () {
      * The footer triggered a page event.
      */
     DatatableComponent.prototype.onFooterPage = function (event) {
+        var _this = this;
         this.offset = event.page - 1;
         this.bodyComponent.updateOffsetY(this.offset);
         this.page.emit({
@@ -28226,6 +28227,8 @@ var DatatableComponent = /** @class */ (function () {
                 selected: this.selected
             });
         }
+        console.log('onFooterPage');
+        this._internalColumns && setTimeout(function () { return _this.setResponsivenessToColumns(); }, 200);
     };
     /**
      * Recalculates the sizes of the page
