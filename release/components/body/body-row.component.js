@@ -21,7 +21,6 @@ var DataTableBodyRowComponent = /** @class */ (function () {
         this.scrollbarHelper = scrollbarHelper;
         this.cd = cd;
         this.responsive = false;
-        this.columnResizeMap = null;
         this.columnExpanded = false;
         this.toggleColumnExpand = function (e) { return _this.columnExpanded = !_this.columnExpanded; };
         this.activate = new core_1.EventEmitter();
@@ -192,6 +191,10 @@ var DataTableBodyRowComponent = /** @class */ (function () {
         this.columnResizeMap && this.columnResizeMap.forEach(function (collapsed, i) { return _this._columnsByPin[1].columns[i]._inViewbox = collapsed; });
         this._columnGroupWidths = utils_1.columnGroupWidths(colsByPin, this._columns);
     };
+    __decorate([
+        core_1.Input(),
+        __metadata("design:type", Object)
+    ], DataTableBodyRowComponent.prototype, "columnResizeMap", void 0);
     __decorate([
         core_1.Input(),
         __metadata("design:type", Subject_1.Subject)

@@ -58,6 +58,7 @@ import {Subject} from 'rxjs/Subject';
             [rowClass]="rowClass"
             [displayCheck]="displayCheck"
             [columnsResize]="columnsResize"
+            [columnResizeMap]="columnResizeMap"
             (activate)="selector.onActivate($event, indexes.first + i)">
           </datatable-body-row>
           <ng-template #groupedRowsTemplate>
@@ -75,6 +76,7 @@ import {Subject} from 'rxjs/Subject';
               [expanded]="getRowExpanded(row)"
               [rowClass]="rowClass"
               [columnsResize]="columnsResize"
+              [columnResizeMap]="columnResizeMap"
               (activate)="selector.onActivate($event, i)">
             </datatable-body-row>
           </ng-template>
@@ -117,6 +119,7 @@ export class DataTableBodyComponent implements OnInit, OnDestroy {
 
   @Input()
   columnsResize: Subject<any>;
+  columnResizeMap = null; // this map is shared between all rows
 
   @Input() set pageSize(val: number) {
     this._pageSize = val;

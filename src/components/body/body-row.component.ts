@@ -75,7 +75,7 @@ export class DataTableBodyRowComponent implements DoCheck, OnInit {
 
   responsive: boolean = false;
 
-  columnResizeMap = null;
+  @Input() columnResizeMap;
 
   ngOnInit() {
     this._columnsByPin[1].columns.forEach(c => c._inViewbox = true);
