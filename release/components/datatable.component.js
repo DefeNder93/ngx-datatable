@@ -240,6 +240,7 @@ var DatatableComponent = /** @class */ (function () {
          * Rows that are displayed in the table.
          */
         set: function (val) {
+            var _this = this;
             this._rows = val;
             // auto sort on new updates
             if (!this.externalSorting) {
@@ -255,7 +256,7 @@ var DatatableComponent = /** @class */ (function () {
                 this.groupedRows = this.groupArrayBy(this._rows, this._groupRowsBy);
             }
             console.log('set columns setResponsivenessToColumns');
-            this._internalColumns && this.setResponsivenessToColumns();
+            this._internalColumns && setTimeout(function () { return _this.setResponsivenessToColumns(); }, 200);
             this.cd.markForCheck();
         },
         enumerable: true,

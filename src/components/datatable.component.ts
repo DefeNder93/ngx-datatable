@@ -186,7 +186,7 @@ export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
     }
 
     console.log('set columns setResponsivenessToColumns');
-    this._internalColumns && this.setResponsivenessToColumns();
+    this._internalColumns && setTimeout(() => this.setResponsivenessToColumns(), 200);
 
     this.cd.markForCheck();
   }
