@@ -13,7 +13,7 @@ import {Subject} from "rxjs/Subject";
     <div
       orderable
       (reorder)="onColumnReordered($event)"
-      [style.width.px]="_columnGroupWidths.total"
+      [style.width.px]="stickyHeader ? _innerWidth : _columnGroupWidths.total"
       [ngClass]="{'datatable-sticky-header': stickyHeader}"
       class="datatable-header-inner">
       <div
@@ -54,14 +54,14 @@ import {Subject} from "rxjs/Subject";
     class: 'datatable-header'
   },
   styles: [`
-    .datatable-header-inner.datatable-sticky-header {
-      position: fixed;
-      top: 0;
-      background-color: #FFF;
-      z-index: 30;
-      opacity: 1;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-    }
+    /*.datatable-header-inner.datatable-sticky-header {*/
+      /*position: fixed;*/
+      /*top: 0;*/
+      /*background-color: #FFF;*/
+      /*z-index: 30;*/
+      /*opacity: 1;*/
+      /*border-bottom: 1px solid rgba(0, 0, 0, 0.12);*/
+    /*}*/
   `],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -262,6 +262,12 @@ export class DataTableHeaderComponent implements OnInit{
   }
 
   calcStylesByGroup(group: string): any {
+    // console.log('calcStylesByGroup ' + this.innerWidth);
+    // // return this.innerWidth;
+    // return {
+    //   width: `${this.innerWidth[group]}px`
+    // };
+
     const widths = this._columnGroupWidths;
     const offsetX = this.offsetX;
 

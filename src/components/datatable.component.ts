@@ -710,6 +710,7 @@ export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
     // if the table is hidden the visibility
     // listener will invoke this itself upon show
     this.recalculate();
+    setTimeout(() => this.setResponsivenessToColumns());
     this.windowResize$.debounceTime(200).subscribe(m => this.setResponsivenessToColumns());
     this.windowScroll$.debounceTime(100).subscribe(m => this.setStickyHeader());
   }

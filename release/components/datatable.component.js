@@ -45,7 +45,8 @@ var DatatableComponent = /** @class */ (function () {
         };
         this.setStickyHeader = function () {
             var jEl = $(_this.element);
-            _this.stickyHeader = jEl.offset().top < window.pageYOffset && jEl.offset().top + jEl.outerHeight() > window.pageYOffset;
+            var jDatatableHeader = jEl.find('.datatable-header');
+            _this.stickyHeader = jEl.offset().top < window.pageYOffset && jEl.offset().top + jEl.outerHeight() > window.pageYOffset + jDatatableHeader.outerHeight();
             _this.cd.markForCheck();
         };
         this.getColumnsResizeMap = function () {
@@ -500,6 +501,7 @@ var DatatableComponent = /** @class */ (function () {
         // if the table is hidden the visibility
         // listener will invoke this itself upon show
         this.recalculate();
+        setTimeout(function () { return _this.setResponsivenessToColumns(); });
         this.windowResize$.debounceTime(200).subscribe(function (m) { return _this.setResponsivenessToColumns(); });
         this.windowScroll$.debounceTime(100).subscribe(function (m) { return _this.setStickyHeader(); });
     };
