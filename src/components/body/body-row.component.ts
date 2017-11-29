@@ -67,10 +67,12 @@ import {RowSharedData} from '../../services/row-shared-data.service';
       display: flex;
     }
     .datatable-responsive-row /deep/ .datatable-body-column-name {
-      display: inline;
+      display: inline-block;
+      padding-right: 10px;
+      min-width: 170px;
     }
     .datatable-responsive-row /deep/ .datatable-body-cell-label {
-      display: inline;
+      display: inline-block;
     }
   `]
 
