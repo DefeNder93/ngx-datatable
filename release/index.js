@@ -26133,9 +26133,10 @@ var DataTableBodyRowComponent = /** @class */ (function () {
         this._columns = val;
         var colsByPin = utils_1.columnsByPin(this._columns);
         this._columnsByPin = utils_1.allColumnsByPinArr(this._columns);
-        // console.log('recalculateColumns');
+        console.log('recalculateColumns');
         this.rowSharedData.columnResizeMap && this.rowSharedData.columnResizeMap.forEach(function (collapsed, i) { return _this._columnsByPin[1].columns[i]._inViewbox = collapsed; });
         this._columnGroupWidths = utils_1.columnGroupWidths(colsByPin, this._columns);
+        this.cd.markForCheck();
     };
     __decorate([
         core_1.Input(),
