@@ -148,7 +148,7 @@ export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
     this.alwaysShownColumns && this.alwaysShownColumns.forEach(i => shownWidthEdge += this._internalColumns[i].width);
     let resizeMap = [];
     this._internalColumns.forEach((c, i) => {
-      if (this.alwaysShownColumns.indexOf(i) !== -1) {  // if the column should be always shown
+      if (this.alwaysShownColumns && this.alwaysShownColumns.indexOf(i) !== -1) {  // if the column should be always shown
         resizeMap.push(true);
         return;
       }

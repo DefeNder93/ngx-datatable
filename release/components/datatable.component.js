@@ -62,7 +62,7 @@ var DatatableComponent = /** @class */ (function () {
             _this.alwaysShownColumns && _this.alwaysShownColumns.forEach(function (i) { return shownWidthEdge += _this._internalColumns[i].width; });
             var resizeMap = [];
             _this._internalColumns.forEach(function (c, i) {
-                if (_this.alwaysShownColumns.indexOf(i) !== -1) {
+                if (_this.alwaysShownColumns && _this.alwaysShownColumns.indexOf(i) !== -1) {
                     resizeMap.push(true);
                     return;
                 }
