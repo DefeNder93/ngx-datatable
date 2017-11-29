@@ -136,11 +136,11 @@ export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
   }
 
   getColumnsResizeMap = () => {
-    if (!this.responsive) {
-      return this._internalColumns.map(c => true)
-    }
     const jEl = $(this.element);
     const jDatatableHeader = jEl.find('.datatable-header');
+    if (!this.responsive && !jDatatableHeader.length) {
+      return this._internalColumns.map(c => true)
+    }
     const eps = 3;
     let headerRightEdge = jDatatableHeader.offset().left + jDatatableHeader.outerWidth() + eps;
     const jFirstColumn = jEl.find('.datatable-header-cell').first();
@@ -184,6 +184,9 @@ export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
       // If a column has been specified in _groupRowsBy created a new array with the data grouped by that row
       this.groupedRows = this.groupArrayBy(this._rows, this._groupRowsBy);
     }
+
+    console.log('set columns setResponsivenessToColumns');
+    this._internalColumns && this.setResponsivenessToColumns();
 
     this.cd.markForCheck();
   }
@@ -237,8 +240,6 @@ export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
       this._internalColumns = [...val];
       setColumnDefaults(this._internalColumns);
       this.recalculateColumns();
-      console.log('set columns setResponsivenessToColumns');
-      this.setResponsivenessToColumns();
     }
 
     this._columns = val;

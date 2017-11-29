@@ -27566,11 +27566,11 @@ var DatatableComponent = /** @class */ (function () {
             _this.cd.markForCheck();
         };
         this.getColumnsResizeMap = function () {
-            if (!_this.responsive) {
-                return _this._internalColumns.map(function (c) { return true; });
-            }
             var jEl = $(_this.element);
             var jDatatableHeader = jEl.find('.datatable-header');
+            if (!_this.responsive && !jDatatableHeader.length) {
+                return _this._internalColumns.map(function (c) { return true; });
+            }
             var eps = 3;
             var headerRightEdge = jDatatableHeader.offset().left + jDatatableHeader.outerWidth() + eps;
             var jFirstColumn = jEl.find('.datatable-header-cell').first();
@@ -27770,6 +27770,8 @@ var DatatableComponent = /** @class */ (function () {
                 // If a column has been specified in _groupRowsBy created a new array with the data grouped by that row
                 this.groupedRows = this.groupArrayBy(this._rows, this._groupRowsBy);
             }
+            console.log('set columns setResponsivenessToColumns');
+            this._internalColumns && this.setResponsivenessToColumns();
             this.cd.markForCheck();
         },
         enumerable: true,
@@ -27809,8 +27811,6 @@ var DatatableComponent = /** @class */ (function () {
                 this._internalColumns = val.slice();
                 utils_1.setColumnDefaults(this._internalColumns);
                 this.recalculateColumns();
-                console.log('set columns setResponsivenessToColumns');
-                this.setResponsivenessToColumns();
             }
             this._columns = val;
         },
