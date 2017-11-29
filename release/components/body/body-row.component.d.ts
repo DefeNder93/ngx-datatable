@@ -6,6 +6,7 @@ export declare class DataTableBodyRowComponent implements DoCheck, OnInit {
     private scrollbarHelper;
     private cd;
     responsive: boolean;
+    columnResizeMap: any;
     ngOnInit(): void;
     columnsResize: Subject<any>;
     columns: any[];

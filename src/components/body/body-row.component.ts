@@ -75,12 +75,15 @@ export class DataTableBodyRowComponent implements DoCheck, OnInit {
 
   responsive: boolean = false;
 
+  columnResizeMap = null;
+
   ngOnInit() {
     this._columnsByPin[1].columns.forEach(c => c._inViewbox = true);
-    this.columnsResize.subscribe(e => {
-      console.log('columns resize body', e);
-      e.forEach((collapsed, i) => this._columnsByPin[1].columns[i]._inViewbox = collapsed);
-      this.responsive = e.indexOf(false) !== -1;
+    this.columnsResize.subscribe(resizeMap => {
+      this.columnResizeMap = resizeMap;
+      console.log('columns resize body', resizeMap);
+      resizeMap.forEach((collapsed, i) => this._columnsByPin[1].columns[i]._inViewbox = collapsed);
+      this.responsive = resizeMap.indexOf(false) !== -1;
       this.cd.markForCheck();
     });
   }
@@ -271,7 +274,9 @@ export class DataTableBodyRowComponent implements DoCheck, OnInit {
   recalculateColumns(val: any[] = this.columns): void {
     this._columns = val;
     const colsByPin = columnsByPin(this._columns);
-    this._columnsByPin = allColumnsByPinArr(this._columns);        
+    this._columnsByPin = allColumnsByPinArr(this._columns);
+    // console.log('recalculateColumns');
+    this.columnResizeMap && this.columnResizeMap.forEach((collapsed, i) => this._columnsByPin[1].columns[i]._inViewbox = collapsed);
     this._columnGroupWidths = columnGroupWidths(colsByPin, this._columns);
   }
 

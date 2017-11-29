@@ -25965,6 +25965,7 @@ var DataTableBodyRowComponent = /** @class */ (function () {
         this.scrollbarHelper = scrollbarHelper;
         this.cd = cd;
         this.responsive = false;
+        this.columnResizeMap = null;
         this.columnExpanded = false;
         this.toggleColumnExpand = function (e) { return _this.columnExpanded = !_this.columnExpanded; };
         this.activate = new core_1.EventEmitter();
@@ -25979,10 +25980,11 @@ var DataTableBodyRowComponent = /** @class */ (function () {
     DataTableBodyRowComponent.prototype.ngOnInit = function () {
         var _this = this;
         this._columnsByPin[1].columns.forEach(function (c) { return c._inViewbox = true; });
-        this.columnsResize.subscribe(function (e) {
-            console.log('columns resize body', e);
-            e.forEach(function (collapsed, i) { return _this._columnsByPin[1].columns[i]._inViewbox = collapsed; });
-            _this.responsive = e.indexOf(false) !== -1;
+        this.columnsResize.subscribe(function (resizeMap) {
+            _this.columnResizeMap = resizeMap;
+            console.log('columns resize body', resizeMap);
+            resizeMap.forEach(function (collapsed, i) { return _this._columnsByPin[1].columns[i]._inViewbox = collapsed; });
+            _this.responsive = resizeMap.indexOf(false) !== -1;
             _this.cd.markForCheck();
         });
     };
@@ -26125,10 +26127,13 @@ var DataTableBodyRowComponent = /** @class */ (function () {
         });
     };
     DataTableBodyRowComponent.prototype.recalculateColumns = function (val) {
+        var _this = this;
         if (val === void 0) { val = this.columns; }
         this._columns = val;
         var colsByPin = utils_1.columnsByPin(this._columns);
         this._columnsByPin = utils_1.allColumnsByPinArr(this._columns);
+        // console.log('recalculateColumns');
+        this.columnResizeMap && this.columnResizeMap.forEach(function (collapsed, i) { return _this._columnsByPin[1].columns[i]._inViewbox = collapsed; });
         this._columnGroupWidths = utils_1.columnGroupWidths(colsByPin, this._columns);
     };
     __decorate([
@@ -28212,7 +28217,6 @@ var DatatableComponent = /** @class */ (function () {
      * The footer triggered a page event.
      */
     DatatableComponent.prototype.onFooterPage = function (event) {
-        var _this = this;
         this.offset = event.page - 1;
         this.bodyComponent.updateOffsetY(this.offset);
         this.page.emit({
@@ -28228,7 +28232,8 @@ var DatatableComponent = /** @class */ (function () {
             });
         }
         console.log('onFooterPage');
-        this._internalColumns && setTimeout(function () { return _this.setResponsivenessToColumns(); });
+        // this._internalColumns && setTimeout(() => this.setResponsivenessToColumns());
+        this.setResponsivenessToColumns();
     };
     /**
      * Recalculates the sizes of the page
