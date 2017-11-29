@@ -13,7 +13,7 @@ import {Subject} from "rxjs/Subject";
     <div
       orderable
       (reorder)="onColumnReordered($event)"
-      [style.width.px]="stickyHeader ? _innerWidth : _columnGroupWidths.total"
+      [style.width.px]="stickyHeader ? _innerWidth - 1 : _columnGroupWidths.total"
       [ngClass]="{'datatable-sticky-header': stickyHeader}"
       class="datatable-header-inner">
       <div
