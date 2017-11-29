@@ -10,10 +10,11 @@ import {Subject} from "rxjs/Subject";
 @Component({
   selector: 'datatable-header',
   template: `
+    <!--_columnGroupWidths.total-->
     <div
       orderable
       (reorder)="onColumnReordered($event)"
-      [style.width.px]="stickyHeader ? _innerWidth - 1 : _columnGroupWidths.total"
+      [style.width.px]="_innerWidth - 1"
       [ngClass]="{'datatable-sticky-header': stickyHeader}"
       class="datatable-header-inner">
       <div
