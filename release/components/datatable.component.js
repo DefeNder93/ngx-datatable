@@ -696,6 +696,7 @@ var DatatableComponent = /** @class */ (function () {
      * The footer triggered a page event.
      */
     DatatableComponent.prototype.onFooterPage = function (event) {
+        var _this = this;
         this.offset = event.page - 1;
         this.bodyComponent.updateOffsetY(this.offset);
         this.page.emit({
@@ -711,7 +712,7 @@ var DatatableComponent = /** @class */ (function () {
             });
         }
         console.log('onFooterPage');
-        this.setResponsivenessToColumns();
+        this._internalColumns && setTimeout(function () { return _this.setResponsivenessToColumns(); });
     };
     /**
      * Recalculates the sizes of the page

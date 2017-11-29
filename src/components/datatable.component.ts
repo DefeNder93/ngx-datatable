@@ -943,7 +943,7 @@ export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
       });
     }
     console.log('onFooterPage');
-    this.setResponsivenessToColumns();
+    this._internalColumns && setTimeout(() => this.setResponsivenessToColumns());
   }
 
   /**
