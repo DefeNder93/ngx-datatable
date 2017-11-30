@@ -145,14 +145,14 @@ export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
     let headerRightEdge = jDatatableHeader.offset().left + jDatatableHeader.outerWidth() + eps;
     const jFirstColumn = jEl.find('.datatable-header-cell').first();
     let shownWidthEdge = jFirstColumn.offset().left; // first column left edge
-    this.alwaysShownColumns && this.alwaysShownColumns.forEach(i => shownWidthEdge += this._internalColumns[i].width);
+    this.alwaysShownColumns && this.alwaysShownColumns.forEach(i => shownWidthEdge += this._internalColumns[i].minWidth);
     let resizeMap = [];
     this._internalColumns.forEach((c, i) => {
       if (this.alwaysShownColumns && this.alwaysShownColumns.indexOf(i) !== -1) {  // if the column should be always shown
         resizeMap.push(true);
         return;
       }
-      shownWidthEdge += c.width;
+      shownWidthEdge += c.minWidth;
       if (headerRightEdge < shownWidthEdge) {
         resizeMap.push(false);
         return;
