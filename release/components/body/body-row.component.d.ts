@@ -10,6 +10,7 @@ export declare class DataTableBodyRowComponent implements DoCheck, OnInit {
     responsive: boolean;
     ngOnInit(): void;
     columnsResize: Subject<any>;
+    sorts: any[];
     columns: any[];
     innerWidth: number;
     expanded: boolean;

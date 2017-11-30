@@ -39,7 +39,7 @@ var DataTableHeaderComponent = /** @class */ (function () {
         var _this = this;
         this._columnsByPin[1].columns.forEach(function (c) { return c._inViewbox = true; });
         this.columnsResize.subscribe(function (e) {
-            console.log('columns resize header', e);
+            // console.log('columns resize header', e);
             e.forEach(function (collapsed, i) { return _this._columnsByPin[1].columns[i]._inViewbox = collapsed; });
             _this.cd.markForCheck();
         });

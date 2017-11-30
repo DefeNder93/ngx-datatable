@@ -11,7 +11,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = require("@angular/core");
 var utils_1 = require("../../utils");
-var types_1 = require("../../types");
 var events_1 = require("../../events");
 var DataTableBodyCellComponent = /** @class */ (function () {
     function DataTableBodyCellComponent(element, cd) {
@@ -129,7 +128,7 @@ var DataTableBodyCellComponent = /** @class */ (function () {
         },
         set: function (val) {
             this._sorts = val;
-            this.calcSortDir = this.calcSortDir(val);
+            this.sortDir = this.calcSortDir(val);
         },
         enumerable: true,
         configurable: true
@@ -162,14 +161,12 @@ var DataTableBodyCellComponent = /** @class */ (function () {
                     }
                 }
             }
-            if (!this.sortDir)
+            if (this.sortDir)
                 cls += ' sort-active';
             if (this.isFocused)
                 cls += ' active';
-            if (this.sortDir === types_1.SortDirection.asc)
-                cls += ' sort-asc';
-            if (this.sortDir === types_1.SortDirection.desc)
-                cls += ' sort-desc';
+            // if (this.sortDir === SortDirection.asc) cls += ' sort-asc';
+            // if (this.sortDir === SortDirection.desc) cls += ' sort-desc';
             return cls;
         },
         enumerable: true,
