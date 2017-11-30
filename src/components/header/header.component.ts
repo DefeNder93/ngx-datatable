@@ -71,7 +71,7 @@ export class DataTableHeaderComponent implements OnInit{
   ngOnInit(): void {
     this._columnsByPin[1].columns.forEach(c => c._inViewbox = true);
     this.columnsResize.subscribe(e => {
-      console.log('columns resize header', e);
+      // console.log('columns resize header', e);
       e.forEach((collapsed, i) => this._columnsByPin[1].columns[i]._inViewbox = collapsed);
       this.cd.markForCheck();
     });

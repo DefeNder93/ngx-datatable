@@ -26,6 +26,7 @@ import {RowSharedData} from '../../services/row-shared-data.service';
           *ngFor="let column of colGroup.columns | appVisible; let ii = index; trackBy: columnTrackingFn"
           tabindex="-1"
           [row]="row"
+          [sorts]="sorts"
           [group]="group"
           [responsive]="responsive"
           [expanded]="expanded"
@@ -46,6 +47,7 @@ import {RowSharedData} from '../../services/row-shared-data.service';
           *ngFor="let column of colGroup.columns | appVisible:true; let ii = index; trackBy: columnTrackingFn"
           tabindex="-1"
           [row]="row"
+          [sorts]="sorts"
           [group]="group"
           [expanded]="expanded"
           [isSelected]="isSelected"
@@ -85,7 +87,7 @@ export class DataTableBodyRowComponent implements DoCheck, OnInit {
     this._columnsByPin[1].columns.forEach(c => c._inViewbox = true);
     this.columnsResize.subscribe(resizeMap => {
       this.rowSharedData.columnResizeMap = resizeMap;
-      console.log('columns resize body', resizeMap);
+      // console.log('columns resize body', resizeMap);
       resizeMap.forEach((collapsed, i) => this._columnsByPin[1].columns[i]._inViewbox = collapsed);
       this.responsive = resizeMap.indexOf(false) !== -1;
       this.cd.markForCheck();
@@ -94,6 +96,7 @@ export class DataTableBodyRowComponent implements DoCheck, OnInit {
 
   @Input()
   columnsResize: Subject<any>;
+  @Input() sorts: any[];
 
   @Input() set columns(val: any[]) {
     this._columns = val;

@@ -135,7 +135,7 @@ export class DataTableBodyCellComponent implements DoCheck, OnDestroy {
 
   @Input() set sorts(val: any[]) {
     this._sorts = val;
-    this.calcSortDir = this.calcSortDir(val);
+    this.sortDir = this.calcSortDir(val);
   }
 
   get sorts(): any[] {
@@ -171,10 +171,10 @@ export class DataTableBodyCellComponent implements DoCheck, OnDestroy {
         }
       }
     }
-    if (!this.sortDir) cls += ' sort-active';
+    if (this.sortDir) cls += ' sort-active';
     if (this.isFocused) cls += ' active';
-    if (this.sortDir === SortDirection.asc) cls += ' sort-asc';
-    if (this.sortDir === SortDirection.desc) cls += ' sort-desc';
+    // if (this.sortDir === SortDirection.asc) cls += ' sort-asc';
+    // if (this.sortDir === SortDirection.desc) cls += ' sort-desc';
 
     return cls;
   }

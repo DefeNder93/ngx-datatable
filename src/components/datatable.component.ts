@@ -56,6 +56,7 @@ import * as $ from 'jquery';
         (columnContextmenu)="onColumnContextmenu($event)">
       </datatable-header>
       <datatable-body
+        [sorts]="sorts"
         [groupRowsBy]="groupRowsBy"
         [columnsResize]="columnsResize"
         [groupedRows]="groupedRows"
@@ -159,7 +160,7 @@ export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
       }
       resizeMap.push(true);
     });
-    console.log('headerRightEdge', headerRightEdge, 'shownWidthEdge', shownWidthEdge, 'resizeMap', resizeMap);
+    // console.log('headerRightEdge', headerRightEdge, 'shownWidthEdge', shownWidthEdge, 'resizeMap', resizeMap);
     return resizeMap;
   }
 
@@ -185,7 +186,7 @@ export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
       this.groupedRows = this.groupArrayBy(this._rows, this._groupRowsBy);
     }
 
-    console.log('set columns setResponsivenessToColumns');
+    // console.log('set columns setResponsivenessToColumns');
     this._internalColumns && setTimeout(() => this.setResponsivenessToColumns(), 200);
 
     this.cd.markForCheck();
@@ -942,7 +943,6 @@ export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
         selected: this.selected
       });
     }
-    console.log('onFooterPage');
     this._internalColumns && setTimeout(() => this.setResponsivenessToColumns());
     // this.setResponsivenessToColumns()
   }

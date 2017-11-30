@@ -49,6 +49,7 @@ import {Subject} from 'rxjs/Subject';
             tabindex="-1"
             [isSelected]="selector.getRowSelected(group)"
             [innerWidth]="innerWidth"
+            [sorts]="sorts"
             [offsetX]="offsetX"
             [columns]="columns"
             [rowHeight]="getRowHeight(group)"
@@ -66,6 +67,7 @@ import {Subject} from 'rxjs/Subject';
               tabindex="-1"
               [isSelected]="selector.getRowSelected(row)"
               [innerWidth]="innerWidth"
+              [sorts]="sorts"
               [offsetX]="offsetX"
               [columns]="columns"
               [rowHeight]="getRowHeight(row)"
@@ -117,6 +119,8 @@ export class DataTableBodyComponent implements OnInit, OnDestroy {
 
   @Input()
   columnsResize: Subject<any>;
+
+  @Input() sorts: any[];
 
   @Input() set pageSize(val: number) {
     this._pageSize = val;
