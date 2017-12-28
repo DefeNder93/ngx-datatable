@@ -27587,7 +27587,7 @@ var DatatableComponent = /** @class */ (function () {
             var headerRightEdge = jDatatableHeader.offset().left + jDatatableHeader.outerWidth() + eps;
             var jFirstColumn = jEl.find('.datatable-header-cell').first();
             var shownWidthEdge = jFirstColumn.offset().left; // first column left edge
-            _this.alwaysShownColumns && _this.alwaysShownColumns.forEach(function (i) { return shownWidthEdge += _this._internalColumns[i].minWidth; });
+            _this.alwaysShownColumns && _this.alwaysShownColumns.forEach(function (i) { return _this._internalColumns[i] && (shownWidthEdge += _this._internalColumns[i].minWidth); });
             var resizeMap = [];
             _this._internalColumns.forEach(function (c, i) {
                 if (_this.alwaysShownColumns && _this.alwaysShownColumns.indexOf(i) !== -1) {
