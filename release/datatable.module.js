@@ -8,6 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = require("@angular/core");
 var common_1 = require("@angular/common");
+var row_shared_data_service_1 = require("./services/row-shared-data.service");
 var components_1 = require("./components");
 var directives_1 = require("./directives");
 var services_1 = require("./services");
@@ -22,7 +23,8 @@ var NgxDatatableModule = /** @class */ (function () {
             ],
             providers: [
                 services_1.ScrollbarHelper,
-                services_1.DimensionsHelper
+                services_1.DimensionsHelper,
+                row_shared_data_service_1.RowSharedData
             ],
             declarations: [
                 components_1.DataTableFooterTemplateDirective,

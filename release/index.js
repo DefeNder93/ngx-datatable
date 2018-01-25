@@ -17083,6 +17083,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = __webpack_require__("@angular/core");
 var common_1 = __webpack_require__("@angular/common");
+var row_shared_data_service_1 = __webpack_require__("./src/services/row-shared-data.service.ts");
 var components_1 = __webpack_require__("./src/components/index.ts");
 var directives_1 = __webpack_require__("./src/directives/index.ts");
 var services_1 = __webpack_require__("./src/services/index.ts");
@@ -17097,7 +17098,8 @@ var NgxDatatableModule = /** @class */ (function () {
             ],
             providers: [
                 services_1.ScrollbarHelper,
-                services_1.DimensionsHelper
+                services_1.DimensionsHelper,
+                row_shared_data_service_1.RowSharedData
             ],
             declarations: [
                 components_1.DataTableFooterTemplateDirective,

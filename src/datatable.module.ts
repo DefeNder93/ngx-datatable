@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import {RowSharedData} from './services/row-shared-data.service';
 
 import {
   DatatableComponent,
@@ -45,7 +46,8 @@ import {AppVisiblePipe} from './pipes/visible.pipe';
   ],
   providers: [
     ScrollbarHelper,
-    DimensionsHelper
+    DimensionsHelper,
+    RowSharedData
   ],
   declarations: [
     DataTableFooterTemplateDirective,
