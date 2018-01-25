@@ -131,6 +131,7 @@ export class DataTableHeaderComponent implements OnInit{
     const colsByPin = columnsByPin(val);
     this._columnsByPin = columnsByPinArr(val);
     this._columnGroupWidths = columnGroupWidths(colsByPin, val);
+    this.setStylesByGroup();
   }
 
   get columns(): any[] {

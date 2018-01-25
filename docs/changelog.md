@@ -1,5 +1,16 @@
 # Changelog
 
+## 11.1.7
+- Fix: Fix error w/ rows undefined on init
+
+## 11.1.6
+- Bug: Ignore rxjs/operators
+- Feat: Ability to disable virtualization #1191
+- Feat: Universal Support #1178
+
+## 11.1.5
+- Compat: Fix Angular 4.x Compat
+
 ## 11.1.4
 - Bug: Fix column templates not updating with loops/ifs
 - Bug: Fix sorting on cross browser

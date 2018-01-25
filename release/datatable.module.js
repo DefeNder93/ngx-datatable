@@ -8,12 +8,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = require("@angular/core");
 var common_1 = require("@angular/common");
-require("rxjs/add/observable/fromEvent");
 var components_1 = require("./components");
 var directives_1 = require("./directives");
 var services_1 = require("./services");
 var visible_pipe_1 = require("./pipes/visible.pipe");
-var row_shared_data_service_1 = require("./services/row-shared-data.service");
 var NgxDatatableModule = /** @class */ (function () {
     function NgxDatatableModule() {
     }
@@ -24,7 +22,7 @@ var NgxDatatableModule = /** @class */ (function () {
             ],
             providers: [
                 services_1.ScrollbarHelper,
-                row_shared_data_service_1.RowSharedData
+                services_1.DimensionsHelper
             ],
             declarations: [
                 components_1.DataTableFooterTemplateDirective,

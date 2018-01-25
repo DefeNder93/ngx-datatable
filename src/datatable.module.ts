@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import 'rxjs/add/observable/fromEvent';
 
 import {
   DatatableComponent,
@@ -34,9 +33,11 @@ import {
   DraggableDirective
 } from './directives';
 
-import { ScrollbarHelper } from './services';
+import { 
+  ScrollbarHelper,
+  DimensionsHelper 
+} from './services';
 import {AppVisiblePipe} from './pipes/visible.pipe';
-import {RowSharedData} from './services/row-shared-data.service';
 
 @NgModule({
   imports: [
@@ -44,7 +45,7 @@ import {RowSharedData} from './services/row-shared-data.service';
   ],
   providers: [
     ScrollbarHelper,
-    RowSharedData
+    DimensionsHelper
   ],
   declarations: [
     DataTableFooterTemplateDirective,

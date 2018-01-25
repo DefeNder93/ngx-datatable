@@ -1,13 +1,13 @@
 import {
   Component, Input, HostBinding, ElementRef, Output, KeyValueDiffers, KeyValueDiffer,
-  EventEmitter, HostListener, ChangeDetectionStrategy, ChangeDetectorRef, DoCheck, OnInit
+  EventEmitter, HostListener, ChangeDetectionStrategy, ChangeDetectorRef, DoCheck, SkipSelf, OnInit
 } from '@angular/core';
 
 import {
   allColumnsByPinArr, columnsByPin, columnGroupWidths, columnsByPinArr, translateXY, Keys
 } from '../../utils';
 import { ScrollbarHelper } from '../../services';
-import { MouseEvent, KeyboardEvent } from '../../events';
+import { MouseEvent, KeyboardEvent, Event } from '../../events';
 import {Subject} from 'rxjs/Subject';
 import {RowSharedData} from '../../services/row-shared-data.service';
 
@@ -188,7 +188,7 @@ export class DataTableBodyRowComponent implements DoCheck, OnInit {
 
   constructor(
       private differs: KeyValueDiffers,
-      private scrollbarHelper: ScrollbarHelper,
+      @SkipSelf() private scrollbarHelper: ScrollbarHelper,
       private cd: ChangeDetectorRef,
       private rowSharedData: RowSharedData,
       element: ElementRef) {

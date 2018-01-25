@@ -3,7 +3,7 @@ import {
   HostListener, ContentChildren, OnInit, QueryList, AfterViewInit,
   HostBinding, ContentChild, TemplateRef, IterableDiffer,
   DoCheck, KeyValueDiffers, KeyValueDiffer, ViewEncapsulation,
-  ChangeDetectionStrategy, ChangeDetectorRef
+  ChangeDetectionStrategy, ChangeDetectorRef, SkipSelf
 } from '@angular/core';
 
 import 'rxjs/add/operator/debounceTime';
@@ -12,7 +12,7 @@ import {
   forceFillColumnWidths, adjustColumnWidths, sortRows,
   setColumnDefaults, throttleable, translateTemplates
 } from '../utils';
-import { ScrollbarHelper } from '../services';
+import { ScrollbarHelper, DimensionsHelper } from '../services';
 import { ColumnMode, SortType, SelectionType, TableColumn, ContextmenuType } from '../types';
 import { DataTableBodyComponent } from './body';
 import { DatatableGroupHeaderDirective } from './body/body-group-header.directive';
@@ -64,6 +64,7 @@ import * as $ from 'jquery';
         [groupExpansionDefault]="groupExpansionDefault"
         [scrollbarV]="scrollbarV"
         [scrollbarH]="scrollbarH"
+        [virtualization]="virtualization"
         [loadingIndicator]="loadingIndicator"
         [externalPaging]="externalPaging"
         [rowHeight]="rowHeight"
@@ -171,11 +172,13 @@ export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
   @Input() set rows(val: any) {
     this._rows = val;
 
+    if (val) {
+      this._internalRows = [...val];
+    }
+
     // auto sort on new updates
     if (!this.externalSorting) {
-      this._internalRows = sortRows(val, this._internalColumns, this.sorts);
-    } else {
-      this._internalRows = [...val];
+      this._internalRows = sortRows(this._internalRows, this._internalColumns, this.sorts);
     }
 
     // recalculate sizes/etc
@@ -481,6 +484,11 @@ export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
   @Input() selectAllRowsOnPage = false;
 
   /**
+   * A flag for row virtualization on / off
+   */
+  @Input() virtualization: boolean = true;
+
+  /**
    * Body was scrolled typically in a `scrollbarV:true` scenario.
    */
   @Output() scroll: EventEmitter<any> = new EventEmitter();
@@ -666,7 +674,7 @@ export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
    * Returns if all rows are selected.
    */
   get allRowsSelected(): boolean {
-    let allRowsSelected = (this.selected.length === this.rows.length);
+    let allRowsSelected = (this.rows && this.selected && this.selected.length === this.rows.length);
 
     if (this.selectAllRowsOnPage) {
       const indexes = this.bodyComponent.indexes;
@@ -697,7 +705,8 @@ export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
   _columnTemplates: QueryList<DataTableColumnDirective>;
 
   constructor(
-    private scrollbarHelper: ScrollbarHelper,
+    @SkipSelf() private scrollbarHelper: ScrollbarHelper,
+    @SkipSelf() private dimensionsHelper: DimensionsHelper,
     private cd: ChangeDetectorRef,
     element: ElementRef,
     differs: KeyValueDiffers) {
@@ -726,12 +735,16 @@ export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
    */
   ngAfterViewInit(): void {
     if (!this.externalSorting) {
-      this._internalRows = sortRows(this._rows, this._internalColumns, this.sorts);
+      this._internalRows = sortRows(this._internalRows, this._internalColumns, this.sorts);
     }
     setTimeout(() => this.setResponsivenessToColumns(), 200);
 
     // this has to be done to prevent the change detection
     // tree from freaking out because we are readjusting
+    if (typeof requestAnimationFrame === 'undefined') {
+      return;
+    }
+    
     requestAnimationFrame(() => {
       this.recalculate();
 
@@ -773,7 +786,7 @@ export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
 
   /**
    * Creates a map with the data grouped by the user choice of grouping index
-   * 
+   *
    * @param originalArray the original array passed via parameter
    * @param groupByIndex  the index of the column to group the data by
    */
@@ -806,7 +819,7 @@ export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
   ngDoCheck(): void {
     if (this.rowDiffer.diff(this.rows)) {
       if (!this.externalSorting) {
-        this._internalRows = sortRows(this._rows, this._internalColumns, this.sorts);
+        this._internalRows = sortRows(this._internalRows, this._internalColumns, this.sorts);
       } else {
         this._internalRows = [...this.rows];
       }
@@ -879,7 +892,7 @@ export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
    *
    */
   recalculateDims(): void {
-    const dims = this.element.getBoundingClientRect();
+    const dims = this.dimensionsHelper.getDimensions(this.element);
     this._innerWidth = Math.floor(dims.width);
 
     if (this.scrollbarV) {
@@ -1077,7 +1090,7 @@ export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
     // the rows again on the 'push' detection...
     if (this.externalSorting === false) {
       // don't use normal setter so we don't resort
-      this._internalRows = sortRows(this.rows, this._internalColumns, sorts);
+      this._internalRows = sortRows(this._internalRows, this._internalColumns, sorts);
     }
 
     this.sorts = sorts;

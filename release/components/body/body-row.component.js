@@ -8,6 +8,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = require("@angular/core");
 var utils_1 = require("../../utils");
@@ -282,6 +285,7 @@ var DataTableBodyRowComponent = /** @class */ (function () {
             template: "\n    <div\n      *ngFor=\"let colGroup of _columnsByPin; let i = index; trackBy: trackByGroups\"\n      class=\"datatable-row-{{colGroup.type}} datatable-row-group\"\n      style=\"flex-direction: column\"\n      [ngStyle]=\"_groupStyles[colGroup.type]\">\n\n      <div class=\"datatable-main-row\">\n        <datatable-body-cell\n          *ngFor=\"let column of colGroup.columns | appVisible; let ii = index; trackBy: columnTrackingFn\"\n          tabindex=\"-1\"\n          [row]=\"row\"\n          [sorts]=\"sorts\"\n          [group]=\"group\"\n          [responsive]=\"responsive\"\n          [expanded]=\"expanded\"\n          [columnExpanded]=\"columnExpanded\"\n          [isSelected]=\"isSelected\"\n          [columnIndex]=\"ii\"\n          [rowIndex]=\"rowIndex\"\n          [column]=\"column\"\n          [rowHeight]=\"rowHeight\"\n          [displayCheck]=\"displayCheck\"\n          (toggleColumnExpand)=\"toggleColumnExpand($event)\"\n          (activate)=\"onActivate($event, ii)\">\n        </datatable-body-cell>\n      </div>\n\n      <div *ngIf=\"columnExpanded\" class=\"datatable-responsive-row\">\n        <datatable-body-cell\n          *ngFor=\"let column of colGroup.columns | appVisible:true; let ii = index; trackBy: columnTrackingFn\"\n          tabindex=\"-1\"\n          [row]=\"row\"\n          [sorts]=\"sorts\"\n          [group]=\"group\"\n          [expanded]=\"expanded\"\n          [isSelected]=\"isSelected\"\n          [rowIndex]=\"rowIndex\"\n          [column]=\"column\"\n          [rowHeight]=\"rowHeight\"\n          [displayCheck]=\"displayCheck\"\n          (activate)=\"onActivate($event, ii)\">\n        </datatable-body-cell>\n      </div>\n    </div>      \n  ",
             styles: ["\n    .datatable-responsive-row {\n      display: flex; \n      flex-direction: column;\n    }\n    .datatable-main-row {\n      display: flex;\n    }\n    .datatable-responsive-row /deep/ .datatable-body-column-name {\n      display: inline-block;\n      padding-right: 10px;\n      min-width: 170px;\n    }\n    .datatable-responsive-row /deep/ .datatable-body-cell-label {\n      display: inline-block;\n    }\n  "]
         }),
+        __param(1, core_1.SkipSelf()),
         __metadata("design:paramtypes", [core_1.KeyValueDiffers,
             services_1.ScrollbarHelper,
             core_1.ChangeDetectorRef,
