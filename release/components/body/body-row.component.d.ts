@@ -15,13 +15,13 @@ export declare class DataTableBodyRowComponent implements DoCheck, OnInit {
     innerWidth: number;
     expanded: boolean;
     rowClass: any;
-    row: any;
+    row: any[];
+    _row: any;
     group: any;
     isSelected: boolean;
     rowIndex: number;
     displayCheck: any;
     offsetX: number;
-    columnExpanded: boolean;
     toggleColumnExpand: (e: any) => boolean;
     readonly cssClass: string;
     rowHeight: number;

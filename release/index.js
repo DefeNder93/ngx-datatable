@@ -13174,8 +13174,7 @@ var DataTableBodyRowComponent = /** @class */ (function () {
         this.cd = cd;
         this.rowSharedData = rowSharedData;
         this.responsive = false;
-        this.columnExpanded = false;
-        this.toggleColumnExpand = function (e) { return _this.columnExpanded = !_this.columnExpanded; };
+        this.toggleColumnExpand = function (e) { return _this._row.__column_expanded__ = !_this._row.__column_expanded__; };
         this.activate = new core_1.EventEmitter();
         this._groupStyles = {
             left: {},
@@ -13190,7 +13189,6 @@ var DataTableBodyRowComponent = /** @class */ (function () {
         this._columnsByPin[1].columns.forEach(function (c) { return c._inViewbox = true; });
         this.columnsResize.subscribe(function (resizeMap) {
             _this.rowSharedData.columnResizeMap = resizeMap;
-            // console.log('columns resize body', resizeMap);
             resizeMap.forEach(function (collapsed, i) { return _this._columnsByPin[1].columns[i]._inViewbox = collapsed; });
             _this.responsive = resizeMap.indexOf(false) !== -1;
             _this.cd.markForCheck();
@@ -13203,6 +13201,7 @@ var DataTableBodyRowComponent = /** @class */ (function () {
         set: function (val) {
             this._columns = val;
             this.recalculateColumns(val);
+            this.buildStylesByGroup();
         },
         enumerable: true,
         configurable: true
@@ -13219,6 +13218,17 @@ var DataTableBodyRowComponent = /** @class */ (function () {
             this._innerWidth = val;
             this.recalculateColumns();
             this.buildStylesByGroup();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(DataTableBodyRowComponent.prototype, "row", {
+        get: function () {
+            return this._row;
+        },
+        set: function (val) {
+            this._row = val;
+            this._row.__column_expanded__ = false;
         },
         enumerable: true,
         configurable: true
@@ -13268,7 +13278,7 @@ var DataTableBodyRowComponent = /** @class */ (function () {
         configurable: true
     });
     DataTableBodyRowComponent.prototype.ngDoCheck = function () {
-        if (this._rowDiffer.diff(this.row)) {
+        if (this._rowDiffer.diff(this._row)) {
             this.cd.markForCheck();
         }
     };
@@ -13321,7 +13331,7 @@ var DataTableBodyRowComponent = /** @class */ (function () {
             this.activate.emit({
                 type: 'keydown',
                 event: event,
-                row: this.row,
+                row: this._row,
                 rowElement: this._element
             });
         }
@@ -13330,7 +13340,7 @@ var DataTableBodyRowComponent = /** @class */ (function () {
         this.activate.emit({
             type: 'mouseenter',
             event: event,
-            row: this.row,
+            row: this._row,
             rowElement: this._element
         });
     };
@@ -13339,8 +13349,6 @@ var DataTableBodyRowComponent = /** @class */ (function () {
         this._columns = val;
         var colsByPin = utils_1.columnsByPin(this._columns);
         this._columnsByPin = utils_1.allColumnsByPinArr(this._columns);
-        // console.log('recalculateColumns');
-        // this.rowSharedData.columnResizeMap && this.rowSharedData.columnResizeMap.forEach((collapsed, i) => this._columnsByPin[1].columns[i]._inViewbox = collapsed);
         this._columnGroupWidths = utils_1.columnGroupWidths(colsByPin, this._columns);
         this.cd.markForCheck();
     };
@@ -13372,8 +13380,9 @@ var DataTableBodyRowComponent = /** @class */ (function () {
     ], DataTableBodyRowComponent.prototype, "rowClass", void 0);
     __decorate([
         core_1.Input(),
-        __metadata("design:type", Object)
-    ], DataTableBodyRowComponent.prototype, "row", void 0);
+        __metadata("design:type", Object),
+        __metadata("design:paramtypes", [Object])
+    ], DataTableBodyRowComponent.prototype, "row", null);
     __decorate([
         core_1.Input(),
         __metadata("design:type", Object)
@@ -13430,7 +13439,7 @@ var DataTableBodyRowComponent = /** @class */ (function () {
         core_1.Component({
             selector: 'datatable-body-row',
             changeDetection: core_1.ChangeDetectionStrategy.OnPush,
-            template: "\n    <div\n      *ngFor=\"let colGroup of _columnsByPin; let i = index; trackBy: trackByGroups\"\n      class=\"datatable-row-{{colGroup.type}} datatable-row-group\"\n      style=\"flex-direction: column\"\n      [ngStyle]=\"_groupStyles[colGroup.type]\">\n\n      <div class=\"datatable-main-row\">\n        <datatable-body-cell\n          *ngFor=\"let column of colGroup.columns | appVisible; let ii = index; trackBy: columnTrackingFn\"\n          tabindex=\"-1\"\n          [row]=\"row\"\n          [sorts]=\"sorts\"\n          [group]=\"group\"\n          [responsive]=\"responsive\"\n          [expanded]=\"expanded\"\n          [columnExpanded]=\"columnExpanded\"\n          [isSelected]=\"isSelected\"\n          [columnIndex]=\"ii\"\n          [rowIndex]=\"rowIndex\"\n          [column]=\"column\"\n          [rowHeight]=\"rowHeight\"\n          [displayCheck]=\"displayCheck\"\n          (toggleColumnExpand)=\"toggleColumnExpand($event)\"\n          (activate)=\"onActivate($event, ii)\">\n        </datatable-body-cell>\n      </div>\n\n      <div *ngIf=\"columnExpanded\" class=\"datatable-responsive-row\">\n        <datatable-body-cell\n          *ngFor=\"let column of colGroup.columns | appVisible:true; let ii = index; trackBy: columnTrackingFn\"\n          tabindex=\"-1\"\n          [row]=\"row\"\n          [sorts]=\"sorts\"\n          [group]=\"group\"\n          [expanded]=\"expanded\"\n          [isSelected]=\"isSelected\"\n          [rowIndex]=\"rowIndex\"\n          [column]=\"column\"\n          [rowHeight]=\"rowHeight\"\n          [displayCheck]=\"displayCheck\"\n          (activate)=\"onActivate($event, ii)\">\n        </datatable-body-cell>\n      </div>\n    </div>      \n  ",
+            template: "\n    <div\n      *ngFor=\"let colGroup of _columnsByPin; let i = index; trackBy: trackByGroups\"\n      class=\"datatable-row-{{colGroup.type}} datatable-row-group\"\n      style=\"flex-direction: column\"\n      [ngStyle]=\"_groupStyles[colGroup.type]\">\n\n      <div class=\"datatable-main-row\">\n        <datatable-body-cell\n          *ngFor=\"let column of colGroup.columns | appVisible; let ii = index; trackBy: columnTrackingFn\"\n          tabindex=\"-1\"\n          [row]=\"_row\"\n          [sorts]=\"sorts\"\n          [group]=\"group\"\n          [responsive]=\"responsive\"\n          [expanded]=\"expanded\"\n          [columnExpanded]=\"_row.__column_expanded__\"\n          [isSelected]=\"isSelected\"\n          [columnIndex]=\"ii\"\n          [rowIndex]=\"rowIndex\"\n          [column]=\"column\"\n          [rowHeight]=\"rowHeight\"\n          [displayCheck]=\"displayCheck\"\n          (toggleColumnExpand)=\"toggleColumnExpand($event)\"\n          (activate)=\"onActivate($event, ii)\">\n        </datatable-body-cell>\n      </div>\n\n      <div *ngIf=\"_row.__column_expanded__\" class=\"datatable-responsive-row\">\n        <datatable-body-cell\n          *ngFor=\"let column of colGroup.columns | appVisible:true; let ii = index; trackBy: columnTrackingFn\"\n          tabindex=\"-1\"\n          [row]=\"_row\"\n          [sorts]=\"sorts\"\n          [group]=\"group\"\n          [expanded]=\"expanded\"\n          [isSelected]=\"isSelected\"\n          [rowIndex]=\"rowIndex\"\n          [column]=\"column\"\n          [rowHeight]=\"rowHeight\"\n          [displayCheck]=\"displayCheck\"\n          (activate)=\"onActivate($event, ii)\">\n        </datatable-body-cell>\n      </div>\n    </div>      \n  ",
             styles: ["\n    .datatable-responsive-row {\n      display: flex; \n      flex-direction: column;\n    }\n    .datatable-main-row {\n      display: flex;\n    }\n    .datatable-responsive-row /deep/ .datatable-body-column-name {\n      display: inline-block;\n      padding-right: 10px;\n      min-width: 170px;\n    }\n    .datatable-responsive-row /deep/ .datatable-body-cell-label {\n      display: inline-block;\n    }\n  "]
         }),
         __param(1, core_1.SkipSelf()),
