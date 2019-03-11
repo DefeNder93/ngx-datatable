@@ -4,7 +4,7 @@ import {
 } from '@angular/core';
 
 import {
-  allColumnsByPinArr, columnsByPin, columnGroupWidths, columnsByPinArr, translateXY, Keys
+  columnsByPin, columnGroupWidths, columnsByPinArr, translateXY, Keys, allColumnsByPinArr
 } from '../../utils';
 import { ScrollbarHelper } from '../../services';
 import { MouseEvent, KeyboardEvent, Event } from '../../events';
@@ -25,12 +25,12 @@ import {RowSharedData} from '../../services/row-shared-data.service';
         <datatable-body-cell
           *ngFor="let column of colGroup.columns | appVisible; let ii = index; trackBy: columnTrackingFn"
           tabindex="-1"
-          [row]="row"
+          [row]="_row"
           [sorts]="sorts"
           [group]="group"
           [responsive]="responsive"
           [expanded]="expanded"
-          [columnExpanded]="columnExpanded"
+          [columnExpanded]="_row.__column_expanded__"
           [isSelected]="isSelected"
           [columnIndex]="ii"
           [rowIndex]="rowIndex"
@@ -42,11 +42,11 @@ import {RowSharedData} from '../../services/row-shared-data.service';
         </datatable-body-cell>
       </div>
 
-      <div *ngIf="columnExpanded" class="datatable-responsive-row">
+      <div *ngIf="_row.__column_expanded__" class="datatable-responsive-row">
         <datatable-body-cell
           *ngFor="let column of colGroup.columns | appVisible:true; let ii = index; trackBy: columnTrackingFn"
           tabindex="-1"
-          [row]="row"
+          [row]="_row"
           [sorts]="sorts"
           [group]="group"
           [expanded]="expanded"
@@ -87,7 +87,6 @@ export class DataTableBodyRowComponent implements DoCheck, OnInit {
     this._columnsByPin[1].columns.forEach(c => c._inViewbox = true);
     this.columnsResize.subscribe(resizeMap => {
       this.rowSharedData.columnResizeMap = resizeMap;
-      // console.log('columns resize body', resizeMap);
       resizeMap.forEach((collapsed, i) => this._columnsByPin[1].columns[i]._inViewbox = collapsed);
       this.responsive = resizeMap.indexOf(false) !== -1;
       this.cd.markForCheck();
@@ -101,6 +100,7 @@ export class DataTableBodyRowComponent implements DoCheck, OnInit {
   @Input() set columns(val: any[]) {
     this._columns = val;
     this.recalculateColumns(val);
+    this.buildStylesByGroup();
   }
 
   get columns(): any[] {
@@ -124,7 +124,17 @@ export class DataTableBodyRowComponent implements DoCheck, OnInit {
 
   @Input() expanded: boolean;
   @Input() rowClass: any;
-  @Input() row: any;
+
+  get row(): any[] {
+    return this._row;
+  }
+
+  @Input() set row(val) {
+    this._row = val;
+    this._row.__column_expanded__ = false;
+  }
+  _row: any;
+
   @Input() group: any;
   @Input() isSelected: boolean;
   @Input() rowIndex: number;
@@ -137,8 +147,7 @@ export class DataTableBodyRowComponent implements DoCheck, OnInit {
   }
   get offsetX() { return this._offsetX; }
 
-  columnExpanded = false;
-  toggleColumnExpand = (e) => this.columnExpanded = !this.columnExpanded;
+  toggleColumnExpand = (e) => this._row.__column_expanded__ = !this._row.__column_expanded__;
 
   @HostBinding('class')
   get cssClass() {
@@ -197,7 +206,7 @@ export class DataTableBodyRowComponent implements DoCheck, OnInit {
   }
 
   ngDoCheck(): void {
-    if (this._rowDiffer.diff(this.row)) {
+    if (this._rowDiffer.diff(this._row)) {
       this.cd.markForCheck();
     }
   }
@@ -263,7 +272,7 @@ export class DataTableBodyRowComponent implements DoCheck, OnInit {
       this.activate.emit({
         type: 'keydown',
         event,
-        row: this.row,
+        row: this._row,
         rowElement: this._element
       });
     }
@@ -272,19 +281,17 @@ export class DataTableBodyRowComponent implements DoCheck, OnInit {
   @HostListener('mouseenter', ['$event'])
   onMouseenter(event: any): void {
     this.activate.emit({
-        type: 'mouseenter',
-        event,
-        row: this.row,
-        rowElement: this._element
-      });
+      type: 'mouseenter',
+      event,
+      row: this._row,
+      rowElement: this._element
+    });
   }
 
   recalculateColumns(val: any[] = this.columns): void {
     this._columns = val;
     const colsByPin = columnsByPin(this._columns);
     this._columnsByPin = allColumnsByPinArr(this._columns);
-    // console.log('recalculateColumns');
-    // this.rowSharedData.columnResizeMap && this.rowSharedData.columnResizeMap.forEach((collapsed, i) => this._columnsByPin[1].columns[i]._inViewbox = collapsed);
     this._columnGroupWidths = columnGroupWidths(colsByPin, this._columns);
     this.cd.markForCheck();
   }
