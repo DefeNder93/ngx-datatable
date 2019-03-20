@@ -62,7 +62,7 @@ var DatatableComponent = /** @class */ (function () {
             var eps = 3;
             var headerRightEdge = jDatatableHeader.offset().left + jDatatableHeader.outerWidth() + eps;
             var jFirstColumn = jEl.find('.datatable-header-cell').first();
-            var shownWidthEdge = jFirstColumn.offset().left; // first column left edge
+            var shownWidthEdge = jFirstColumn.offset() ? jFirstColumn.offset().left : 0; // first column left edge
             _this.alwaysShownColumns && _this.alwaysShownColumns.forEach(function (i) { return _this._internalColumns[i] && (shownWidthEdge += _this._internalColumns[i].minWidth); });
             var resizeMap = [];
             _this._internalColumns.forEach(function (c, i) {
@@ -77,7 +77,6 @@ var DatatableComponent = /** @class */ (function () {
                 }
                 resizeMap.push(true);
             });
-            // console.log('headerRightEdge', headerRightEdge, 'shownWidthEdge', shownWidthEdge, 'resizeMap', resizeMap);
             return resizeMap;
         };
         /**

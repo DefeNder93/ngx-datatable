@@ -2,15 +2,27 @@ import { ElementRef, KeyValueDiffers, EventEmitter, ChangeDetectorRef, DoCheck, 
 import { ScrollbarHelper } from '../../services';
 import { Subject } from 'rxjs/Subject';
 import { RowSharedData } from '../../services/row-shared-data.service';
+import { BehaviorSubject, Observable } from "../../../node_modules/rxjs";
+import 'rxjs/add/observable/of';
+import 'rxjs/add/observable/combineLatest';
+import 'rxjs/add/operator/takeUntil';
+import 'rxjs/add/operator/startWith';
 export declare class DataTableBodyRowComponent implements DoCheck, OnInit {
     private differs;
     private scrollbarHelper;
     private cd;
     private rowSharedData;
-    responsive: boolean;
+    responsive$: BehaviorSubject<boolean>;
     ngOnInit(): void;
+    ngOnDestroy(): void;
+    columns$: BehaviorSubject<any[]>;
+    _columnsResize: Subject<any>;
+    private getColumnsObserverable;
+    visibleColumns$: Observable<any[]>;
+    collapsedColumns$: Observable<any[]>;
     columnsResize: Subject<any>;
     sorts: any[];
+    private destroy$;
     columns: any[];
     innerWidth: number;
     expanded: boolean;

@@ -18,6 +18,11 @@ var services_1 = require("../../services");
 var events_1 = require("../../events");
 var Subject_1 = require("rxjs/Subject");
 var row_shared_data_service_1 = require("../../services/row-shared-data.service");
+var rxjs_1 = require("../../../node_modules/rxjs");
+require("rxjs/add/observable/of");
+require("rxjs/add/observable/combineLatest");
+require("rxjs/add/operator/takeUntil");
+require("rxjs/add/operator/startWith");
 var DataTableBodyRowComponent = /** @class */ (function () {
     function DataTableBodyRowComponent(differs, scrollbarHelper, cd, rowSharedData, element) {
         var _this = this;
@@ -25,7 +30,19 @@ var DataTableBodyRowComponent = /** @class */ (function () {
         this.scrollbarHelper = scrollbarHelper;
         this.cd = cd;
         this.rowSharedData = rowSharedData;
-        this.responsive = false;
+        this.responsive$ = new rxjs_1.BehaviorSubject(false);
+        this.columns$ = new rxjs_1.BehaviorSubject([]);
+        this._columnsResize = new Subject_1.Subject();
+        this.getColumnsObserverable = function (reversed) {
+            if (reversed === void 0) { reversed = false; }
+            return rxjs_1.Observable.combineLatest(_this.columns$.asObservable(), _this._columnsResize.startWith(null)).map(function (_a) {
+                var columns = _a[0], columnsResize = _a[1];
+                return columnsResize ? columns.filter(function (e, i) { return reversed ? !columnsResize[i] : columnsResize[i]; }) : columns;
+            });
+        };
+        this.visibleColumns$ = this.getColumnsObserverable();
+        this.collapsedColumns$ = this.getColumnsObserverable(true);
+        this.destroy$ = new rxjs_1.ReplaySubject(1);
         this.toggleColumnExpand = function (e) { return _this._row.__column_expanded__ = !_this._row.__column_expanded__; };
         this.activate = new core_1.EventEmitter();
         this._groupStyles = {
@@ -38,13 +55,15 @@ var DataTableBodyRowComponent = /** @class */ (function () {
     }
     DataTableBodyRowComponent.prototype.ngOnInit = function () {
         var _this = this;
-        this._columnsByPin[1].columns.forEach(function (c) { return c._inViewbox = true; });
-        this.columnsResize.subscribe(function (resizeMap) {
-            _this.rowSharedData.columnResizeMap = resizeMap;
-            resizeMap.forEach(function (collapsed, i) { return _this._columnsByPin[1].columns[i]._inViewbox = collapsed; });
-            _this.responsive = resizeMap.indexOf(false) !== -1;
-            _this.cd.markForCheck();
+        this.columnsResize
+            .takeUntil(this.destroy$)
+            .subscribe(function (resizeMap) {
+            _this.responsive$.next(resizeMap.indexOf(false) !== -1);
+            _this._columnsResize.next(resizeMap);
         });
+    };
+    DataTableBodyRowComponent.prototype.ngOnDestroy = function () {
+        this.destroy$.next(null);
     };
     Object.defineProperty(DataTableBodyRowComponent.prototype, "columns", {
         get: function () {
@@ -202,7 +221,8 @@ var DataTableBodyRowComponent = /** @class */ (function () {
         var colsByPin = utils_1.columnsByPin(this._columns);
         this._columnsByPin = utils_1.allColumnsByPinArr(this._columns);
         this._columnGroupWidths = utils_1.columnGroupWidths(colsByPin, this._columns);
-        this.cd.markForCheck();
+        this.columns$.next(this._columnsByPin[1].columns);
+        // this.cd.markForCheck();
     };
     __decorate([
         core_1.Input(),
@@ -291,7 +311,7 @@ var DataTableBodyRowComponent = /** @class */ (function () {
         core_1.Component({
             selector: 'datatable-body-row',
             changeDetection: core_1.ChangeDetectionStrategy.OnPush,
-            template: "\n    <div\n      *ngFor=\"let colGroup of _columnsByPin; let i = index; trackBy: trackByGroups\"\n      class=\"datatable-row-{{colGroup.type}} datatable-row-group\"\n      style=\"flex-direction: column\"\n      [ngStyle]=\"_groupStyles[colGroup.type]\">\n\n      <div class=\"datatable-main-row\">\n        <datatable-body-cell\n          *ngFor=\"let column of colGroup.columns | appVisible; let ii = index; trackBy: columnTrackingFn\"\n          tabindex=\"-1\"\n          [row]=\"_row\"\n          [sorts]=\"sorts\"\n          [group]=\"group\"\n          [responsive]=\"responsive\"\n          [expanded]=\"expanded\"\n          [columnExpanded]=\"_row.__column_expanded__\"\n          [isSelected]=\"isSelected\"\n          [columnIndex]=\"ii\"\n          [rowIndex]=\"rowIndex\"\n          [column]=\"column\"\n          [rowHeight]=\"rowHeight\"\n          [displayCheck]=\"displayCheck\"\n          (toggleColumnExpand)=\"toggleColumnExpand($event)\"\n          (activate)=\"onActivate($event, ii)\">\n        </datatable-body-cell>\n      </div>\n\n      <div *ngIf=\"_row.__column_expanded__\" class=\"datatable-responsive-row\">\n        <datatable-body-cell\n          *ngFor=\"let column of colGroup.columns | appVisible:true; let ii = index; trackBy: columnTrackingFn\"\n          tabindex=\"-1\"\n          [row]=\"_row\"\n          [sorts]=\"sorts\"\n          [group]=\"group\"\n          [expanded]=\"expanded\"\n          [isSelected]=\"isSelected\"\n          [rowIndex]=\"rowIndex\"\n          [column]=\"column\"\n          [rowHeight]=\"rowHeight\"\n          [displayCheck]=\"displayCheck\"\n          (activate)=\"onActivate($event, ii)\">\n        </datatable-body-cell>\n      </div>\n    </div>      \n  ",
+            template: "\n    <div\n      class=\"datatable-row-center datatable-row-group\"\n      style=\"flex-direction: column\"\n      [ngStyle]=\"_groupStyles['center']\">\n\n      <div class=\"datatable-main-row\">\n        <datatable-body-cell\n          *ngFor=\"let column of visibleColumns$ | async; let ii = index; trackBy: columnTrackingFn\"\n          tabindex=\"-1\"\n          [row]=\"_row\"\n          [sorts]=\"sorts\"\n          [group]=\"group\"\n          [responsive]=\"responsive$ | async\"\n          [expanded]=\"expanded\"\n          [columnExpanded]=\"_row.__column_expanded__\"\n          [isSelected]=\"isSelected\"\n          [columnIndex]=\"ii\"\n          [rowIndex]=\"rowIndex\"\n          [column]=\"column\"\n          [rowHeight]=\"rowHeight\"\n          [displayCheck]=\"displayCheck\"\n          (toggleColumnExpand)=\"toggleColumnExpand($event)\"\n          (activate)=\"onActivate($event, ii)\">\n        </datatable-body-cell>\n      </div>\n\n      <div *ngIf=\"_row.__column_expanded__\" class=\"datatable-responsive-row\">\n        <datatable-body-cell\n          *ngFor=\"let column of collapsedColumns$ | async; let ii = index; trackBy: columnTrackingFn\"\n          tabindex=\"-1\"\n          [row]=\"_row\"\n          [sorts]=\"sorts\"\n          [group]=\"group\"\n          [expanded]=\"expanded\"\n          [isSelected]=\"isSelected\"\n          [rowIndex]=\"rowIndex\"\n          [column]=\"column\"\n          [rowHeight]=\"rowHeight\"\n          [displayCheck]=\"displayCheck\"\n          (activate)=\"onActivate($event, ii)\">\n        </datatable-body-cell>\n      </div>\n    </div>      \n  ",
             styles: ["\n    .datatable-responsive-row {\n      display: flex; \n      flex-direction: column;\n    }\n    .datatable-main-row {\n      display: flex;\n    }\n    .datatable-responsive-row /deep/ .datatable-body-column-name {\n      display: inline-block;\n      padding-right: 10px;\n      min-width: 170px;\n    }\n    .datatable-responsive-row /deep/ .datatable-body-cell-label {\n      display: inline-block;\n    }\n  "]
         }),
         __param(1, core_1.SkipSelf()),

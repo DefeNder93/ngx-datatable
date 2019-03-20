@@ -1,10 +1,16 @@
-import { EventEmitter, OnInit, ChangeDetectorRef } from '@angular/core';
+import { EventEmitter, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { SortType, SelectionType } from '../../types';
 import { DataTableColumnDirective } from '../columns';
 import { Subject } from "rxjs/Subject";
-export declare class DataTableHeaderComponent implements OnInit {
+import { BehaviorSubject, Observable } from "../../../node_modules/rxjs";
+import 'rxjs/add/observable/of';
+import 'rxjs/add/observable/combineLatest';
+import 'rxjs/add/operator/takeUntil';
+import 'rxjs/add/operator/startWith';
+export declare class DataTableHeaderComponent implements OnInit, OnDestroy {
     private cd;
     ngOnInit(): void;
+    ngOnDestroy(): void;
     constructor(cd: ChangeDetectorRef);
     sortAscendingIcon: any;
     sortDescendingIcon: any;
@@ -12,6 +18,10 @@ export declare class DataTableHeaderComponent implements OnInit {
     dealsWithGroup: boolean;
     stickyHeader: boolean;
     columnsResize: Subject<any>;
+    _columnsResize: Subject<any>;
+    private destroy$;
+    columns$: BehaviorSubject<any[]>;
+    headerColumns$: Observable<any[]>;
     _innerWidth: number;
     innerWidth: number;
     sorts: any[];
