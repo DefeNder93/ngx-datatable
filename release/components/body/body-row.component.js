@@ -18,11 +18,14 @@ var services_1 = require("../../services");
 var events_1 = require("../../events");
 var Subject_1 = require("rxjs/Subject");
 var row_shared_data_service_1 = require("../../services/row-shared-data.service");
-var rxjs_1 = require("../../../node_modules/rxjs");
+var BehaviorSubject_1 = require("rxjs/BehaviorSubject");
+var ReplaySubject_1 = require("rxjs/ReplaySubject");
+var Observable_1 = require("rxjs/Observable");
 require("rxjs/add/observable/of");
 require("rxjs/add/observable/combineLatest");
 require("rxjs/add/operator/takeUntil");
 require("rxjs/add/operator/startWith");
+require("rxjs/add/operator/map");
 var DataTableBodyRowComponent = /** @class */ (function () {
     function DataTableBodyRowComponent(differs, scrollbarHelper, cd, rowSharedData, element) {
         var _this = this;
@@ -30,19 +33,19 @@ var DataTableBodyRowComponent = /** @class */ (function () {
         this.scrollbarHelper = scrollbarHelper;
         this.cd = cd;
         this.rowSharedData = rowSharedData;
-        this.responsive$ = new rxjs_1.BehaviorSubject(false);
-        this.columns$ = new rxjs_1.BehaviorSubject([]);
+        this.responsive$ = new BehaviorSubject_1.BehaviorSubject(false);
+        this.columns$ = new BehaviorSubject_1.BehaviorSubject([]);
         this._columnsResize = new Subject_1.Subject();
         this.getColumnsObserverable = function (reversed) {
             if (reversed === void 0) { reversed = false; }
-            return rxjs_1.Observable.combineLatest(_this.columns$.asObservable(), _this._columnsResize.startWith(null)).map(function (_a) {
+            return Observable_1.Observable.combineLatest(_this.columns$.asObservable(), _this._columnsResize.startWith(null)).map(function (_a) {
                 var columns = _a[0], columnsResize = _a[1];
                 return columnsResize ? columns.filter(function (e, i) { return reversed ? !columnsResize[i] : columnsResize[i]; }) : columns;
             });
         };
         this.visibleColumns$ = this.getColumnsObserverable();
         this.collapsedColumns$ = this.getColumnsObserverable(true);
-        this.destroy$ = new rxjs_1.ReplaySubject(1);
+        this.destroy$ = new ReplaySubject_1.ReplaySubject(1);
         this.toggleColumnExpand = function (e) { return _this._row.__column_expanded__ = !_this._row.__column_expanded__; };
         this.activate = new core_1.EventEmitter();
         this._groupStyles = {

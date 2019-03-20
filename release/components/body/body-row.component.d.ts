@@ -2,11 +2,13 @@ import { ElementRef, KeyValueDiffers, EventEmitter, ChangeDetectorRef, DoCheck, 
 import { ScrollbarHelper } from '../../services';
 import { Subject } from 'rxjs/Subject';
 import { RowSharedData } from '../../services/row-shared-data.service';
-import { BehaviorSubject, Observable } from "../../../node_modules/rxjs";
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/of';
 import 'rxjs/add/observable/combineLatest';
 import 'rxjs/add/operator/takeUntil';
 import 'rxjs/add/operator/startWith';
+import 'rxjs/add/operator/map';
 export declare class DataTableBodyRowComponent implements DoCheck, OnInit {
     private differs;
     private scrollbarHelper;

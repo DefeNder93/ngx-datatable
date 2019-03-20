@@ -21,18 +21,21 @@ var core_1 = require("@angular/core");
 var types_1 = require("../../types");
 var utils_1 = require("../../utils");
 var Subject_1 = require("rxjs/Subject");
-var rxjs_1 = require("../../../node_modules/rxjs");
+var BehaviorSubject_1 = require("rxjs/BehaviorSubject");
+var ReplaySubject_1 = require("rxjs/ReplaySubject");
+var Observable_1 = require("rxjs/Observable");
 require("rxjs/add/observable/of");
 require("rxjs/add/observable/combineLatest");
 require("rxjs/add/operator/takeUntil");
 require("rxjs/add/operator/startWith");
+require("rxjs/add/operator/map");
 var DataTableHeaderComponent = /** @class */ (function () {
     function DataTableHeaderComponent(cd) {
         this.cd = cd;
         this._columnsResize = new Subject_1.Subject();
-        this.destroy$ = new rxjs_1.ReplaySubject(1);
-        this.columns$ = new rxjs_1.BehaviorSubject([]);
-        this.headerColumns$ = rxjs_1.Observable.combineLatest(this.columns$.asObservable(), this._columnsResize.startWith(null)).map(function (_a) {
+        this.destroy$ = new ReplaySubject_1.ReplaySubject(1);
+        this.columns$ = new BehaviorSubject_1.BehaviorSubject([]);
+        this.headerColumns$ = Observable_1.Observable.combineLatest(this.columns$.asObservable(), this._columnsResize.startWith(null)).map(function (_a) {
             var columns = _a[0], columnsResize = _a[1];
             return columnsResize ? columns.filter(function (e, i) { return columnsResize[i]; }) : columns;
         });
