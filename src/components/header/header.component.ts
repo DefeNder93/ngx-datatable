@@ -1,11 +1,16 @@
 import {
-  Component, Output, EventEmitter, Input, HostBinding, OnInit, ChangeDetectorRef, ChangeDetectionStrategy
+  Component, Output, EventEmitter, Input, HostBinding, OnInit, ChangeDetectorRef, ChangeDetectionStrategy, OnDestroy
 } from '@angular/core';
 import { SortType, SelectionType } from '../../types';
 import { columnsByPin, columnGroupWidths, columnsByPinArr, translateXY } from '../../utils';
 import { DataTableColumnDirective } from '../columns';
 import { MouseEvent } from '../../events';
 import {Subject} from "rxjs/Subject";
+import {BehaviorSubject, Observable, ReplaySubject} from "../../../node_modules/rxjs";
+import 'rxjs/add/observable/of';
+import 'rxjs/add/observable/combineLatest';
+import 'rxjs/add/operator/takeUntil';
+import 'rxjs/add/operator/startWith';
 
 @Component({
   selector: 'datatable-header',
@@ -18,11 +23,10 @@ import {Subject} from "rxjs/Subject";
       [ngClass]="{'datatable-sticky-header': stickyHeader}"
       class="datatable-header-inner">
       <div
-        *ngFor="let colGroup of _columnsByPin; trackBy: trackByGroups"
-        [class]="'datatable-row-' + colGroup.type"
-        [ngStyle]="_styleByGroup[colGroup.type]">
+        class="datatable-row-center"
+        [ngStyle]="_styleByGroup['center']">
         <datatable-header-cell
-          *ngFor="let column of colGroup.columns | appVisible; trackBy: columnTrackingFn"
+          *ngFor="let column of headerColumns$ | async; trackBy: columnTrackingFn"
           resizeable
           [resizeEnabled]="column.resizeable"
           (resize)="onColumnResized($event, column)"
@@ -66,15 +70,15 @@ import {Subject} from "rxjs/Subject";
   `],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DataTableHeaderComponent implements OnInit{
+export class DataTableHeaderComponent implements OnInit, OnDestroy{
 
   ngOnInit(): void {
-    this._columnsByPin[1].columns.forEach(c => c._inViewbox = true);
-    this.columnsResize.subscribe(e => {
-      // console.log('columns resize header', e);
-      e.forEach((collapsed, i) => this._columnsByPin[1].columns[i]._inViewbox = collapsed);
-      this.cd.markForCheck();
-    });
+    this.columnsResize.takeUntil(this.destroy$)
+      .subscribe(e => this._columnsResize.next(e));
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next(null);
   }
 
   constructor(private cd: ChangeDetectorRef) {}
@@ -87,6 +91,15 @@ export class DataTableHeaderComponent implements OnInit{
 
   @Input()
   columnsResize: Subject<any>;
+  _columnsResize = new Subject<any>();
+
+  private destroy$ = new ReplaySubject(1);
+
+  columns$ = new BehaviorSubject([]);
+  headerColumns$ = Observable.combineLatest(
+    this.columns$.asObservable(),
+    this._columnsResize.startWith(null)
+  ).map(([columns, columnsResize]) => columnsResize ? columns.filter((e, i) => columnsResize[i]) : columns);
 
   _innerWidth: number;
 
@@ -126,10 +139,10 @@ export class DataTableHeaderComponent implements OnInit{
   }
 
   @Input() set columns(val: any[]) {
-    this._columns = val;    
-
+    this._columns = val;
     const colsByPin = columnsByPin(val);
     this._columnsByPin = columnsByPinArr(val);
+    this.columns$.next(this._columnsByPin[1].columns);
     this._columnGroupWidths = columnGroupWidths(colsByPin, val);
     this.setStylesByGroup();
   }

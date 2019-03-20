@@ -10,25 +10,29 @@ import { ScrollbarHelper } from '../../services';
 import { MouseEvent, KeyboardEvent, Event } from '../../events';
 import {Subject} from 'rxjs/Subject';
 import {RowSharedData} from '../../services/row-shared-data.service';
+import {BehaviorSubject, Observable, ReplaySubject} from "../../../node_modules/rxjs";
+import 'rxjs/add/observable/of';
+import 'rxjs/add/observable/combineLatest';
+import 'rxjs/add/operator/takeUntil';
+import 'rxjs/add/operator/startWith';
 
 @Component({
   selector: 'datatable-body-row',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div
-      *ngFor="let colGroup of _columnsByPin; let i = index; trackBy: trackByGroups"
-      class="datatable-row-{{colGroup.type}} datatable-row-group"
+      class="datatable-row-center datatable-row-group"
       style="flex-direction: column"
-      [ngStyle]="_groupStyles[colGroup.type]">
+      [ngStyle]="_groupStyles['center']">
 
       <div class="datatable-main-row">
         <datatable-body-cell
-          *ngFor="let column of colGroup.columns | appVisible; let ii = index; trackBy: columnTrackingFn"
+          *ngFor="let column of visibleColumns$ | async; let ii = index; trackBy: columnTrackingFn"
           tabindex="-1"
           [row]="_row"
           [sorts]="sorts"
           [group]="group"
-          [responsive]="responsive"
+          [responsive]="responsive$ | async"
           [expanded]="expanded"
           [columnExpanded]="_row.__column_expanded__"
           [isSelected]="isSelected"
@@ -44,7 +48,7 @@ import {RowSharedData} from '../../services/row-shared-data.service';
 
       <div *ngIf="_row.__column_expanded__" class="datatable-responsive-row">
         <datatable-body-cell
-          *ngFor="let column of colGroup.columns | appVisible:true; let ii = index; trackBy: columnTrackingFn"
+          *ngFor="let column of collapsedColumns$ | async; let ii = index; trackBy: columnTrackingFn"
           tabindex="-1"
           [row]="_row"
           [sorts]="sorts"
@@ -81,21 +85,37 @@ import {RowSharedData} from '../../services/row-shared-data.service';
 })
 export class DataTableBodyRowComponent implements DoCheck, OnInit {
 
-  responsive: boolean = false;
+  responsive$ = new BehaviorSubject<boolean>(false);
 
   ngOnInit() {
-    this._columnsByPin[1].columns.forEach(c => c._inViewbox = true);
-    this.columnsResize.subscribe(resizeMap => {
-      this.rowSharedData.columnResizeMap = resizeMap;
-      resizeMap.forEach((collapsed, i) => this._columnsByPin[1].columns[i]._inViewbox = collapsed);
-      this.responsive = resizeMap.indexOf(false) !== -1;
-      this.cd.markForCheck();
-    });
+    this.columnsResize
+      .takeUntil(this.destroy$)
+      .subscribe(resizeMap => {
+        this.responsive$.next(resizeMap.indexOf(false) !== -1);
+        this._columnsResize.next(resizeMap);
+      });
   }
+
+  ngOnDestroy(): void {
+    this.destroy$.next(null);
+  }
+
+  columns$ = new BehaviorSubject([]);
+  _columnsResize = new Subject<any>();
+
+  private getColumnsObserverable = (reversed = false) => Observable.combineLatest(
+    this.columns$.asObservable(),
+    this._columnsResize.startWith(null)
+  ).map(([columns, columnsResize]) => columnsResize ? columns.filter((e, i) => reversed ? !columnsResize[i] : columnsResize[i]) : columns);
+
+  visibleColumns$ = this.getColumnsObserverable();
+  collapsedColumns$ = this.getColumnsObserverable(true);
 
   @Input()
   columnsResize: Subject<any>;
   @Input() sorts: any[];
+
+  private destroy$ = new ReplaySubject(1);
 
   @Input() set columns(val: any[]) {
     this._columns = val;
@@ -293,7 +313,8 @@ export class DataTableBodyRowComponent implements DoCheck, OnInit {
     const colsByPin = columnsByPin(this._columns);
     this._columnsByPin = allColumnsByPinArr(this._columns);
     this._columnGroupWidths = columnGroupWidths(colsByPin, this._columns);
-    this.cd.markForCheck();
+    this.columns$.next(this._columnsByPin[1].columns);
+    // this.cd.markForCheck();
   }
 
 }

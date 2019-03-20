@@ -141,12 +141,12 @@ export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
     const jEl = $(this.element);
     const jDatatableHeader = jEl.find('.datatable-header');
     if (!this.responsive || !jDatatableHeader.length) {
-      return this._internalColumns.map(c => true)
+      return this._internalColumns.map(c => true);
     }
     const eps = 3;
     let headerRightEdge = jDatatableHeader.offset().left + jDatatableHeader.outerWidth() + eps;
     const jFirstColumn = jEl.find('.datatable-header-cell').first();
-    let shownWidthEdge = jFirstColumn.offset().left; // first column left edge
+    let shownWidthEdge = jFirstColumn.offset() ? jFirstColumn.offset().left : 0; // first column left edge
     this.alwaysShownColumns && this.alwaysShownColumns.forEach(i => this._internalColumns[i] && (shownWidthEdge += this._internalColumns[i].minWidth));
     let resizeMap = [];
     this._internalColumns.forEach((c, i) => {
@@ -161,7 +161,6 @@ export class DatatableComponent implements OnInit, DoCheck, AfterViewInit {
       }
       resizeMap.push(true);
     });
-    // console.log('headerRightEdge', headerRightEdge, 'shownWidthEdge', shownWidthEdge, 'resizeMap', resizeMap);
     return resizeMap;
   }
 
